@@ -1,10 +1,15 @@
 package main
 
-import "net/http"
+import (
+	"io"
+	"net/http"
+)
 
 func main() {
-	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
-		rw.Write([]byte("hello"))
-	})
+	http.HandleFunc("/", index)
 	http.ListenAndServe(":80", nil)
+}
+
+func index(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Hello AWS!")
 }
