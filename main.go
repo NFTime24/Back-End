@@ -6,5 +6,5 @@ func main() {
 	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
 		rw.Write([]byte("hello"))
 	})
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":80", nil)
 }
