@@ -148,7 +148,7 @@ func uploadFiles(w http.ResponseWriter, r *http.Request) {
 
 		tempFile.Write(fileBytes)
 
-		insForm, err := db.Prepare("INSERT INTO img(id,fname, fsize, ftype, path) VALUES(?,?,?,?,?)")
+		insForm, err := db.Prepare("INSERT INTO img(id,filename, filesize, filetype, path) VALUES(?,?,?,?,?)")
 		if err != nil {
 			panic(err.Error())
 		} else {
