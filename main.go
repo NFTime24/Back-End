@@ -42,7 +42,8 @@ type upfile struct {
 
 // var tmplIndex = *template.Template
 var tmpl = template.Must(template.ParseGlob("templates/uploadfile.html"))
-var tmplIndex = template.Must(template.ParseGlob("templates/index.html"))
+
+// var tmplIndex = template.Must(template.ParseGlob("templates/index.html"))
 
 func upload(w http.ResponseWriter, r *http.Request) {
 	db := dbConn()
@@ -183,6 +184,33 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	http.Redirect(w, r, "/", 301)
 }
+func showImg(res http.ResponseWriter, req *http.Request) {
+	imgName := req.URL.Query().Get("name")
+	fmt.Println(imgName)
+	var imgPath string
+	if imgName != "" {
+		imgPath = `./assets/uploadimage` + "/" + imgName
+
+		fmt.Println(imgPath)
+		buf, err := ioutil.ReadFile(imgPath)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		res.Header().Set("Content-Type", "image/png")
+		res.Write(buf)
+	}
+
+	// // if req.Method == "GET" {
+	// // 	imgname := req.URL.Query().Get("name")
+	// // 	fmt.Println(imgname)
+	// // 	http.Redirect(req, res, "/", 301)
+	// // }
+	// imgname := req.URL.Query().Get("name")
+	// fmt.Println(imgname)
+	// http.StripPrefix("/", http.FileServer(http.Dir("assets/img/upload-657043691.jpg")))
+}
 
 func main() {
 	log.Println("Server started on: http://localhost:80")
@@ -190,11 +218,13 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/", upload)
 	http.HandleFunc("/uploadfiles", uploadFiles)
-	http.HandleFunc("/test", index)
+	http.Handle("/test", http.FileServer(http.Dir("/assets")))
+	http.HandleFunc("/showimg", showImg)
+	// http.Handle("/", http.FileServer(http.Dir("assets/uploadimage")))
 	http.ListenAndServe(":80", nil)
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
-	// io.WriteString(w, "Hello fcc")
-	tmplIndex.ExecuteTemplate(w, "index.html", nil)
-}
+// func index(w http.ResponseWriter, r *http.Request) {
+// 	// io.WriteString(w, "Hello fcc")
+// 	tmplIndex.ExecuteTemplate(w, "index.html", nil)
+// }
