@@ -186,13 +186,25 @@ func delete(w http.ResponseWriter, r *http.Request) {
 }
 func showImg(res http.ResponseWriter, req *http.Request) {
 	imgName := req.URL.Query().Get("name")
-	fmt.Println(imgName)
-	var imgPath string
-	if imgName != "" {
-		imgPath = `./assets/uploadimage` + "/" + imgName
+	var path string
+	db := dbConn()
+	selDB, err := db.Query("SELECT path FROM img where filename=?", imgName)
+	if err != nil {
+		panic(err.Error())
+	}
 
-		fmt.Println(imgPath)
-		buf, err := ioutil.ReadFile(imgPath)
+	for selDB.Next() {
+		err = selDB.Scan(&path)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	if imgName != "" {
+		path = `./` + path
+
+		fmt.Println(path)
+		buf, err := ioutil.ReadFile(path)
 
 		if err != nil {
 			log.Fatal(err)
