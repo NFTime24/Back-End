@@ -47,7 +47,7 @@ var tmpl = template.Must(template.ParseGlob("templates/uploadfile.html"))
 
 func upload(w http.ResponseWriter, r *http.Request) {
 	db := dbConn()
-	selDB, err := db.Query("SELECT * FROM img ORDER BY id DESC")
+	selDB, err := db.Query("SELECT * FROM file ORDER BY id DESC")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -94,7 +94,7 @@ func uploadFiles(w http.ResponseWriter, r *http.Request) {
 
 	fil := formdata.File["files"]
 
-	selDB, err := db.Query("SELECT id FROM img ORDER BY id DESC limit 1")
+	selDB, err := db.Query("SELECT id FROM file ORDER BY id DESC limit 1")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -149,7 +149,7 @@ func uploadFiles(w http.ResponseWriter, r *http.Request) {
 
 		tempFile.Write(fileBytes)
 
-		insForm, err := db.Prepare("INSERT INTO img(id,filename, filesize, filetype, path) VALUES(?,?,?,?,?)")
+		insForm, err := db.Prepare("INSERT INTO file(id,filename, filesize, filetype, path) VALUES(?,?,?,?,?)")
 		if err != nil {
 			panic(err.Error())
 		} else {
@@ -175,7 +175,7 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(selDB)
 	// err3 := os.Remove(selDB)
 	fmt.Println(emp)
-	delForm, err := db.Prepare("DELETE FROM img WHERE id=?")
+	delForm, err := db.Prepare("DELETE FROM file WHERE id=?")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -189,7 +189,7 @@ func showImg(res http.ResponseWriter, req *http.Request) {
 	imgName := req.URL.Query().Get("name")
 	var path string
 	db := dbConn()
-	selDB, err := db.Query("SELECT path FROM img where filename=?", imgName)
+	selDB, err := db.Query("SELECT path FROM file where filename=?", imgName)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -221,6 +221,7 @@ func showImg(res http.ResponseWriter, req *http.Request) {
 
 func main() {
 	log.Println("Server started on: http://localhost:80")
+	// fmt.Println(os.Hostname())
 	http.HandleFunc("/dele", delete)
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/", upload)
