@@ -185,49 +185,15 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 301)
 }
 
-func showImg(res http.ResponseWriter, req *http.Request) {
-	imgName := req.URL.Query().Get("name")
-	var path string
-	db := dbConn()
-	selDB, err := db.Query("SELECT path FROM file where filename=?", imgName)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	for selDB.Next() {
-		err = selDB.Scan(&path)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	if imgName != "" && path != "" {
-		path = `./` + path
-
-		fmt.Println(path)
-		buf, err := ioutil.ReadFile(path)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		res.Header().Set("Content-Type", "image/png")
-		res.Write(buf)
-	} else {
-		panic(err)
-	}
-
-}
-
 func main() {
 	log.Println("Server started on: http://localhost:80")
 	// fmt.Println(os.Hostname())
 	http.HandleFunc("/dele", delete)
-	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
+	// http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/", upload)
 	http.HandleFunc("/uploadfiles", uploadFiles)
 	http.Handle("/test", http.FileServer(http.Dir("/assets")))
-	http.HandleFunc("/showimg", showImg)
+	// http.HandleFunc("/showimg", showImg)
 	// http.Handle("/", http.FileServer(http.Dir("assets/uploadimage")))
 	http.ListenAndServe(":80", nil)
 }
