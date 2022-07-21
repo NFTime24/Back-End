@@ -189,7 +189,7 @@ func main() {
 	log.Println("Server started on: http://localhost:80")
 	// fmt.Println(os.Hostname())
 	http.HandleFunc("/dele", delete)
-	// http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
+	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/", upload)
 	http.HandleFunc("/uploadfiles", uploadFiles)
 	http.Handle("/test", http.FileServer(http.Dir("/assets")))
