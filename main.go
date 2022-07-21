@@ -186,8 +186,12 @@ func delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	log.Println("Server started on: http://localhost:80")
-	// fmt.Println(os.Hostname())
+	er := godotenv.Load(".env")
+	if er != nil {
+		panic(er.Error())
+	}
+	port := os.Getenv("PORT")
+	log.Println("Server started on PORT: " + port)
 
 	http.HandleFunc("/delete", delete)
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
