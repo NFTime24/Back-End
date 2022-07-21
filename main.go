@@ -10,10 +10,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/go-chi/chi"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func dbConn() (db *sql.DB) {
@@ -187,29 +185,10 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 301)
 }
 
-// @title Swagger Example API
-// @version 1.0
-// @description This is a sample server Petstore server.
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host petstore.swagger.io
-// @BasePath /
 func main() {
 	log.Println("Server started on: http://localhost:80")
 	// fmt.Println(os.Hostname())
-	r := chi.NewRouter()
-	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:80/swagger/doc.json"), //The url pointing to API definition
-	))
 
-	http.ListenAndServe(":80", nil)
 	http.HandleFunc("/delete", delete)
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/", upload)
@@ -217,7 +196,7 @@ func main() {
 	http.Handle("/test", http.FileServer(http.Dir("/assets")))
 	// http.HandleFunc("/showimg", showImg)
 	// http.Handle("/", http.FileServer(http.Dir("assets/uploadimage")))
-
+	http.ListenAndServe(":80", nil)
 }
 
 // func index(w http.ResponseWriter, r *http.Request) {
