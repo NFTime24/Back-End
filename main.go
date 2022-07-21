@@ -184,6 +184,7 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	http.Redirect(w, r, "/", 301)
 }
+
 func showImg(res http.ResponseWriter, req *http.Request) {
 	imgName := req.URL.Query().Get("name")
 	var path string
@@ -200,7 +201,7 @@ func showImg(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	if imgName != "" {
+	if imgName != "" && path != "" {
 		path = `./` + path
 
 		fmt.Println(path)
@@ -212,16 +213,10 @@ func showImg(res http.ResponseWriter, req *http.Request) {
 
 		res.Header().Set("Content-Type", "image/png")
 		res.Write(buf)
+	} else {
+		panic(err)
 	}
 
-	// // if req.Method == "GET" {
-	// // 	imgname := req.URL.Query().Get("name")
-	// // 	fmt.Println(imgname)
-	// // 	http.Redirect(req, res, "/", 301)
-	// // }
-	// imgname := req.URL.Query().Get("name")
-	// fmt.Println(imgname)
-	// http.StripPrefix("/", http.FileServer(http.Dir("assets/img/upload-657043691.jpg")))
 }
 
 func main() {
