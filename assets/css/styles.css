@@ -8,10 +8,10 @@ body {
   margin: 0;
   background: #f1f9ff;
   /* background-image: url(../img/whitebg.svg); */
-  background-image: url(../img/jjang.jpeg);
-  background-position: top left;
-  background-repeat: no-repeat;
-  background-attachment: scroll;
+  background-image: url(../img/짱구배경화면32.jpeg);
+  background-size: cover;
+  /* background-repeat: repeat; */
+  /* background-attachment: scroll; */
 }
 
 a {
@@ -264,7 +264,8 @@ select {
 }
 .upload-list {
   width: 100%;
-  background: #fff;
+  background-color: #4c6583;
+
   margin-bottom: 40px;
   padding: 30px 30px 5px;
 
@@ -423,8 +424,16 @@ button.submit {
 .txclasses {
   padding: 20px;
 }
-
+.txclasses input {
+  background-color: #4c6583;
+}
+.txclasses input::placeholder {
+  color: white;
+  font-family: "Noto Sans", sans-serif;
+}
 textarea::placeholder {
+  color: white;
   text-align: center;
-  padding-top: 90px;
+  padding-top: 2000px;
+  background-color: #525f7d;
 }

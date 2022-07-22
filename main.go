@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -10,26 +9,11 @@ import (
 	"os"
 	"strings"
 
+	"deukyunlee/protocol-camp/db"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
-
-func dbConn() (db *sql.DB) {
-	er := godotenv.Load(".env")
-	if er != nil {
-		panic(er.Error())
-	}
-	dbDriver := os.Getenv("DB_Driver")
-	dbUser := os.Getenv("DB_User")
-	dbPass := os.Getenv("DB_Password")
-	dbName := os.Getenv("DB_Name")
-	dbHost := os.Getenv("DB_HOST")
-	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+dbHost+")/"+dbName)
-	if err != nil {
-		panic(err.Error())
-	}
-	return db
-}
 
 type upfile struct {
 	ID    int
@@ -46,7 +30,7 @@ var tmpl = template.Must(template.ParseGlob("templates/uploadfile.html"))
 // var tmplIndex = template.Must(template.ParseGlob("templates/index.html"))
 
 func upload(w http.ResponseWriter, r *http.Request) {
-	db := dbConn()
+	db := db.DbConn()
 	selDB, err := db.Query("SELECT id,filename,filesize,filetype,path FROM file ORDER BY id DESC")
 	if err != nil {
 		panic(err.Error())
@@ -81,7 +65,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 func uploadFiles(w http.ResponseWriter, r *http.Request) {
 
-	db := dbConn()
+	db := db.DbConn()
 
 	var id int
 
@@ -165,7 +149,7 @@ func uploadFiles(w http.ResponseWriter, r *http.Request) {
 }
 
 func delete(w http.ResponseWriter, r *http.Request) {
-	db := dbConn()
+	db := db.DbConn()
 	emp := r.URL.Query().Get("id")
 
 	// selDB, err := db.Query("SELECT path from upload where id=?", emp)
