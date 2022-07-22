@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap");
+
 body {
   font-family: "Noto Sans", sans-serif;
   font-weight: 400;
@@ -6,11 +7,13 @@ body {
   color: #000;
   margin: 0;
   background: #f1f9ff;
-  background-image: url(../img/whitebg.svg);
+  /* background-image: url(../img/whitebg.svg); */
+  background-image: url(../img/jjang.jpeg);
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: scroll;
 }
+
 a {
   transition: all 0.4s;
   -webkit-transition: all 0.4s;
@@ -81,8 +84,8 @@ p {
   top: 0;
   left: 0;
   pointer-events: none;
-  background-image: radial-gradient(circle, #000 10%, transparent 10.01%);
-  background-repeat: no-repeat;
+  /* background-image: radial-gradient(circle, #000 10%, transparent 10.01%); */
+  background-repeat: repeat;
   background-position: 50%;
   transform: scale(10, 10);
   opacity: 0;
@@ -405,4 +408,23 @@ button.submit {
   .add-file {
     width: 90%;
   }
+}
+
+#test2 {
+  color: green;
+}
+#text {
+  display: block;
+  border: 0;
+  margin-top: 100px;
+  text-align: center;
+}
+
+.txclasses {
+  padding: 20px;
+}
+
+textarea::placeholder {
+  text-align: center;
+  padding-top: 90px;
 }

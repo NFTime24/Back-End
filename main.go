@@ -47,7 +47,7 @@ var tmpl = template.Must(template.ParseGlob("templates/uploadfile.html"))
 
 func upload(w http.ResponseWriter, r *http.Request) {
 	db := dbConn()
-	selDB, err := db.Query("SELECT * FROM file ORDER BY id DESC")
+	selDB, err := db.Query("SELECT id,filename,filesize,filetype,path FROM file ORDER BY id DESC")
 	if err != nil {
 		panic(err.Error())
 	}
