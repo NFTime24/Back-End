@@ -79,6 +79,11 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	filename := header.Filename
 	dirname := "./assets/uploadimage"
 	os.MkdirAll(dirname, 0777)
+	textname := strings.IndexByte(header.Filename, '.')
+	extensionText := filename[textname:]
+	if extensionText == ".mp4" {
+		dirname = "./assets/uploadvideo"
+	}
 	filepath := fmt.Sprintf("%s/%s", dirname, header.Filename)
 	file, err := os.Create(filepath)
 	if err != nil {
