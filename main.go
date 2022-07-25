@@ -206,7 +206,7 @@ type NFTInfo struct {
 	Filename       string `json:"filename"`
 	Filetype       string `json:"filetype"`
 	Path           string `json:"path"`
-	Thumnail_path  string `json:"thumnail_path"`
+	Thumbnail_path string `json:"thumbnail_path"`
 	Artist_address string `json:"artist_address"`
 	Artist_name    string `json:"artist_name"`
 }
@@ -247,11 +247,11 @@ func getNFTInfo(w http.ResponseWriter, r *http.Request) {
 	nftinfos := NFTInfoBundle{}
 	for selDB.Next() {
 		var id, artist_id, price, file_id, filesize, thumbnail_id int
-		var name, description, category, owner_address, filename, filetype, path, thumnail_path, artist_address, artist_name string
+		var name, description, category, owner_address, filename, filetype, path, thumbnail_path, artist_address, artist_name string
 		//var fname, fsize, ftype, path string
 		err = selDB.Scan(
 			&id, &name, &artist_id, &price, &description, &category, &owner_address,
-			&file_id, &filename, &filesize, &filetype, &path, &thumbnail_id, &thumnail_path,
+			&file_id, &filename, &filesize, &filetype, &path, &thumbnail_id, &thumbnail_path,
 			&artist_address, &artist_name)
 		if err != nil {
 			panic(err.Error())
@@ -271,7 +271,7 @@ func getNFTInfo(w http.ResponseWriter, r *http.Request) {
 		nftinfo.Filetype = filetype
 		nftinfo.Path = path
 		nftinfo.Thumbnail_id = thumbnail_id
-		nftinfo.Thumnail_path = thumnail_path
+		nftinfo.Thumbnail_path = thumbnail_path
 		nftinfo.Artist_address = artist_address
 		nftinfo.Artist_name = artist_name
 
