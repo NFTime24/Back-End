@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NFTime</title>
+    <link rel="stylesheet" href="../static/stylesheets/test.css" />
+  </head>
+
+  <body>
+    <div class="login">
+      <img id="img_logo" src="../static/nftime_white.svg" />
+
+      <form
+        action="/save/{{.Title}}"
+        method="POST"
+        accept-charset="utf-8"
+        enctype="multipart/form-data"
+      >
+        <div>
+          <input
+            type="text"
+            name="workname"
+            placeholder="Workname"
+            required="required"
+          />
+          <input
+            type="text"
+            name="artist"
+            placeholder="Artist"
+            required="required"
+          />
+          <input
+            type="text"
+            onkeypress="return /[0-9]/i.test(event.key)"
+            name="price"
+            placeholder="Price"
+            required="required"
+          />
+          <p>
+            <textarea
+              cols="30"
+              rows="10"
+              name="description"
+              placeholder="description"
+            ></textarea>
+          </p>
+          <input
+            type="file"
+            id="upload_file"
+            name="upload_file"
+            accept="image/png, image/gif, image/jpeg, image/jpg, video/mp4"
+            required
+          />
+        </div>
+
+        <div><input type="submit" value="Save" /></div>
+      </form>
+
+      <!-- <form method="post">
+        <input
+          type="text"
+          name="u"
+          placeholder="Workname"
+          required="required"
+        />
+        <input type="text" name="u" placeholder="Artist" required="required" />
+        <input
+          type="text"
+          onkeypress="return /[0-9]/i.test(event.key)"
+          name="u"
+          placeholder="Price"
+          required="required"
+        />
+        <p>
+          <textarea
+            cols="30"
+            rows="10"
+            name="u"
+            placeholder="description"
+          ></textarea>
+        </p>
+        <input type="file" required />
+        <button type="submit" class="btn btn-primary btn-block btn-large">
+          Submit
+        </button>
+      </form> -->
+    </div>
+  </body>
+</html>

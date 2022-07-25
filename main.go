@@ -1,245 +1,211 @@
 package main
 
 import (
+	"deukyunlee/protocol-camp/db"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 
-	"deukyunlee/protocol-camp/db"
-
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
-type upfile struct {
-	ID    int
-	Fname string
-	Fsize string
-	Ftype string
-	Path  string
-	Count int
+type Page struct {
+	Title string
+	Body  []byte
 }
 
-// var tmplIndex = *template.Template
-var tmpl = template.Must(template.ParseGlob("templates/uploadfile.html"))
+// Page의 Body 부분을 text file로 저장
 
-// var tmplIndex = template.Must(template.ParseGlob("templates/index.html"))
+// func (p *Page) save() error {
+// 	filename := p.Title + ".txt"
+// 	return ioutil.WriteFile(filename, p.Body, 0600)
+// }
 
-func upload(w http.ResponseWriter, r *http.Request) {
-	db := db.DbConn()
-	selDB, err := db.Query("SELECT id,filename,filesize,filetype,path FROM file ORDER BY id DESC")
+// title 변수를 통해 파일이름을 생성한 후 파일의 내용을 읽어들여 Page literal에 대한 ptr 반환
+
+func loadPage(title string) (*Page, error) {
+	filename := title + ".txt"
+	body, err := ioutil.ReadFile(filename)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
-	upld := upfile{}
-	res := []upfile{}
-	for selDB.Next() {
-		var id int
-		var fname, fsize, ftype, path string
-		err = selDB.Scan(&id, &fname, &fsize, &ftype, &path)
-		if err != nil {
-			panic(err.Error())
-		}
-		upld.ID = id
-		upld.Fname = fname
-		upld.Fsize = fsize
-		upld.Ftype = ftype
-		upld.Path = path
-		res = append(res, upld)
-
-	}
-
-	upld.Count = len(res)
-
-	if upld.Count > 0 {
-		tmpl.ExecuteTemplate(w, "uploadfile.html", res)
-	} else {
-		tmpl.ExecuteTemplate(w, "uploadfile.html", nil)
-	}
-	db.Close()
+	return &Page{Title: title, Body: body}, nil
 }
 
-func uploadFiles(w http.ResponseWriter, r *http.Request) {
+// 사용자가 해당 페이지를 볼 수 있도록 함.
+
+// func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
+// 	p, err := loadPage(title)
+// 	if err != nil {
+// 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
+// 		return
+// 	}
+// 	renderTemplate(w, "view", p)
+// }
+
+//
+
+func editHandler(w http.ResponseWriter, r *http.Request, title string) {
+	p, err := loadPage(title)
+	if err != nil {
+		p = &Page{Title: title}
+	}
+	renderTemplate(w, "edit", p)
+}
+
+func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
+
+	workname := r.FormValue("workname")
+	artist := r.FormValue("artist")
+	price := r.FormValue("price")
+	description := r.FormValue("description")
+	uploadFile, header, err := r.FormFile("upload_file")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
+		return
+	}
+	//fileByte = uploadFile.Open()
+
+	defer uploadFile.Close()
+
+	filename := header.Filename
+	dirname := "./assets/uploadimage"
+	os.MkdirAll(dirname, 0777)
+	filepath := fmt.Sprintf("%s/%s", dirname, header.Filename)
+	file, err := os.Create(filepath)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	defer file.Close()
+	fmt.Print(file.Name())
+
+	io.Copy(file, uploadFile)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, filepath)
+
+	info, err := os.Stat(filepath)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("filesize:", info.Size()/1024)
+	filesize := int(info.Size() / 1024)
+	//fmt.Println("type of filesize: ", reflect.TypeOf(filesize))
+	fmt.Println("workname: ", workname)
+	fmt.Println("artist: ", artist)
+	fmt.Println("price: ", price)
+	fmt.Println("description: ", description)
+
+	text := strings.IndexByte(filename, '.')
+	extension := filename[text:]
+	fmt.Println("extension: ", extension)
+
+	path := filepath[2:]
+	fmt.Println("filepath: ", filepath[2:])
+
+	fmt.Println("filename: ", filename)
+	var filetype string
+	switch extension {
+	case ".png":
+		filetype = "image/png"
+		//fmt.Println("image/png")
+	case ".jpg":
+		filetype = "image/jpg"
+		//fmt.Println("image/jpg")
+	case ".jpeg":
+		filetype = "image/jpeg"
+		//fmt.Println("image/jpeg")
+	case ".gif":
+		filetype = "image/gif"
+		//fmt.Println("image/gif")
+	case ".mp4":
+		filetype = "video/mp4"
+		//fmt.Println("video/mp4")
+	}
 
 	db := db.DbConn()
-
 	var id int
-
-	r.ParseMultipartForm(200000)
-	if r == nil {
-		fmt.Fprintf(w, "No files can be selected\n")
+	err = db.QueryRow("SELECT id FROM file order by id desc limit 1").Scan(&id)
+	if err != nil {
+		id = 0
+		//log.Fatal(err)
 	}
+	//fmt.Println(id)
 
-	formdata := r.MultipartForm
-
-	fil := formdata.File["files"]
-
-	selDB, err := db.Query("SELECT id FROM file ORDER BY id DESC limit 1")
+	insForm, err := db.Prepare("INSERT INTO file(id, filename, filesize, filetype, path) VALUES(?,?,?,?,?)")
 	if err != nil {
 		panic(err.Error())
+	} else {
+		log.Println("data insert successfully . . .")
 	}
-	for selDB.Next() {
-		err = selDB.Scan(&id)
-		if err != nil {
-			id = 0
-		}
+	result, err := insForm.Exec(id+1, filename, filesize, filetype, path)
+	if err != nil {
+		log.Fatal(err)
 	}
-	id = id + 1
-	for i := range fil {
+	n, err := result.RowsAffected()
+	fmt.Println(n, "rows affected")
+	log.Printf("Successfully Uploaded File\n")
+	db.Close()
+	// p := &Page{Title: title, Body: []byte(body)}
+	// err := p.save()
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+	http.Redirect(w, r, "/view/"+title, http.StatusFound)
+}
 
-		file, err := fil[i].Open()
-		if err != nil {
-			fmt.Fprintln(w, err)
+var templates = template.Must(template.ParseGlob("./templates/edit.html"))
+
+func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
+	err := templates.ExecuteTemplate(w, tmpl+".html", p)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+
+func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		m := validPath.FindStringSubmatch(r.URL.Path)
+		if m == nil {
+			http.NotFound(w, r)
 			return
 		}
-		defer file.Close()
-
-		fname := fil[i].Filename
-		fsize := fil[i].Size
-		kilobytes := fsize / 1024
-		// megabytes := (float64)(kilobytes / 1024) // cast to type float64
-
-		ftype := fil[i].Header.Get("Content-type")
-		var tempFile *os.File
-
-		text := strings.IndexByte(fname, '.')
-		extension := fname[text:]
-
-		switch extension {
-		case ".png":
-			tempFile, err = ioutil.TempFile("assets/uploadimage", "upload-*.png")
-		case ".jpg":
-			tempFile, err = ioutil.TempFile("assets/uploadimage", "upload-*.jpg")
-		case ".jpeg":
-			tempFile, err = ioutil.TempFile("assets/uploadimage", "upload-*.jpeg")
-		case ".mp4":
-			tempFile, err = ioutil.TempFile("assets/uploadvideo", "upload-*.mp4")
-		}
-
-		if err != nil {
-			fmt.Println(err)
-		}
-		defer tempFile.Close()
-		filepath := tempFile.Name()
-
-		fileBytes, err := ioutil.ReadAll(file)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		tempFile.Write(fileBytes)
-
-		insForm, err := db.Prepare("INSERT INTO file(id,filename, filesize, filetype, path) VALUES(?,?,?,?,?)")
-		if err != nil {
-			panic(err.Error())
-		} else {
-			log.Println("data insert successfully . . .")
-		}
-		insForm.Exec(id, fname, kilobytes, ftype, filepath)
-
-		log.Printf("Successfully Uploaded File\n")
-		defer db.Close()
-
-		http.Redirect(w, r, "/", 301)
+		fn(w, r, m[2])
 	}
-}
-
-func delete(w http.ResponseWriter, r *http.Request) {
-	db := db.DbConn()
-	emp := r.URL.Query().Get("id")
-
-	// selDB, err := db.Query("SELECT path from upload where id=?", emp)
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-	// fmt.Println(selDB)
-	// err3 := os.Remove(selDB)
-	fmt.Println(emp)
-	delForm, err := db.Prepare("DELETE FROM file WHERE id=?")
-	if err != nil {
-		panic(err.Error())
-	}
-	delForm.Exec(emp)
-	log.Println("deleted successfully")
-	defer db.Close()
-	http.Redirect(w, r, "/", 301)
 }
 
 func main() {
-	er := godotenv.Load(".env")
-	if er != nil {
-		panic(er.Error())
+
+	_, err := os.Stat(filepath.Join(".", "assets/stylesheets", "test.css"))
+	if err != nil {
+		panic(err)
 	}
-	port := os.Getenv("PORT")
-	log.Println("Server started on PORT: " + port)
 
-	http.HandleFunc("/delete", delete)
+	// file2, err := os.ReadFile("./uploads/짱구.jpeg")
+	// fmt.Println(string(file2))
+	// fmt.Println(file2)
+
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
-	http.HandleFunc("/", upload)
-	http.HandleFunc("/uploadfiles", uploadFiles)
-	http.Handle("/test", http.FileServer(http.Dir("/assets")))
-	// http.HandleFunc("/showimg", showImg)
-	// http.Handle("/", http.FileServer(http.Dir("assets/uploadimage")))
-	http.ListenAndServe(":80", nil)
+	//http.HandleFunc("/view", upload)
+
+	//http.Handle("/edit/*", http.StripPrefix("/edit/view", http.FileServer(http.Dir("./static"))))
+
+	http.HandleFunc("/edit/", makeHandler(editHandler))
+	http.HandleFunc("/save/", makeHandler(saveHandler))
+	//http.Handle("/", http.FileServer(http.Dir("public")))
+	http.Handle("/css/", http.FileServer(http.Dir("./css/")))
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
-
-// func index(w http.ResponseWriter, r *http.Request) {
-// 	// io.WriteString(w, "Hello fcc")
-// 	tmplIndex.ExecuteTemplate(w, "index.html", nil)
-// }
-
-//sudo nohup go run main.go &
-
-// package main
-
-// import (
-// 	"io"
-// 	"net/http"
-// )
-
-// func main() {
-// 	http.HandleFunc("/", index)
-// 	http.ListenAndServe(":80", nil)
-// }
-
-// func index(w http.ResponseWriter, r *http.Request) {
-// 	io.WriteString(w, "Hello Sircoon!")
-// }
-
-// func showImg(res http.ResponseWriter, req *http.Request) {
-// 	imgName := req.URL.Query().Get("name")
-// 	var path string
-// 	db := dbConn()
-// 	selDB, err := db.Query("SELECT path FROM file where filename=?", imgName)
-// 	if err != nil {
-// 		panic(err.Error())
-// 	}
-
-// 	for selDB.Next() {
-// 		err = selDB.Scan(&path)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-// 	}
-
-// 	if imgName != "" && path != "" {
-// 		path = `./` + path
-
-// 		fmt.Println(path)
-// 		buf, err := ioutil.ReadFile(path)
-
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-
-// 		res.Header().Set("Content-Type", "image/png")
-// 		res.Write(buf)
-// 	} else {
-// 		panic(err)
-// 	}
-
-// }
