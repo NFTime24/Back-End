@@ -185,6 +185,59 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 301)
 }
 
+func getNFTInfo(w http.ResponseWriter, r *http.Request) {
+	nftid := r.URL.Query().Get("id")
+
+	db := dbConn()
+	selDB, err := db.Query(fmt.Sprintf(`
+	select wft.*,
+	a.address as "artist_address", a.name as "artist_name"
+	from
+		(select wf.*,
+		t.path as "thumnail_path"
+		from
+			(select 
+			w.id, w.name, w.artist_id, 
+			ifnull(w.price, 0) as "price", ifnull(w.description, "") as "description", 
+			ifnull(w.category, ""), ifnull(w.owner_address, ""), w.file_id,
+			f.filename, f.filesize, f.filetype, f.path, ifnull(f.thumbnail_id, 0) as "thumbnail_id"
+			from protocol_camp.work as w
+			left join protocol_camp.file as f
+			on w.file_id = f.id
+			where w.id = %s) as wf
+		left join protocol_camp.file as t
+		on wf.thumbnail_id = t.id) as wft
+	left join protocol_camp.artist as a
+	on wft.artist_id = a.id
+	`, nftid))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for selDB.Next() {
+		var id, artist_id, price, file_id, filesize, thumbnail_id int
+		var name, description, category, owner_address, filename, filetype, path, thumnail_path, artist_address, artist_name string
+		//var fname, fsize, ftype, path string
+		err = selDB.Scan(
+			&id, &name, &artist_id, &price, &description, &category, &owner_address,
+			&file_id, &filename, &filesize, &filetype, &path, &thumbnail_id, &thumnail_path,
+			&artist_address, &artist_name)
+		if err != nil {
+			panic(err.Error())
+		}
+		// upld.ID = id
+		// upld.Fname = fname
+		// upld.Fsize = fsize
+		// upld.Ftype = ftype
+		// upld.Path = path
+		// res = append(res, upld)
+
+		fmt.Printf("%d", id)
+	}
+
+	db.Close()
+}
+
 func main() {
 	er := godotenv.Load(".env")
 	if er != nil {
@@ -193,6 +246,7 @@ func main() {
 	port := os.Getenv("PORT")
 	log.Println("Server started on PORT: " + port)
 
+	http.HandleFunc("/getNFTInfo", getNFTInfo)
 	http.HandleFunc("/delete", delete)
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/", upload)
