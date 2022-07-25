@@ -207,5 +207,5 @@ func main() {
 	//http.Handle("/", http.FileServer(http.Dir("public")))
 	http.Handle("/css/", http.FileServer(http.Dir("./css/")))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
