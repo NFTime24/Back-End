@@ -313,7 +313,7 @@ type NFTInfoBundle struct {
 func getNFTInfo(w http.ResponseWriter, r *http.Request) {
 	nft_owner := r.URL.Query().Get("owner_address")
 
-	db := dbConn()
+	db := db.DbConn()
 	selDB, err := db.Query(fmt.Sprintf(`
 	select 
 		n.nft_id, n.owner_address, w.name as "work_name", w.price as "work_price", w.description, w.category,
