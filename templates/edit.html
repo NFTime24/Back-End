@@ -25,7 +25,7 @@
           />
           <select name="artist" id="communciation">
             {{ range . }}
-            <option value="1" name="artist">{{.Aname}}</option>
+            <option value="{{.Aid}}" name="artist">{{.Aname}}</option>
             {{ end }}
           </select>
 
