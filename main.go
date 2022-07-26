@@ -6,16 +6,20 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
+
+type Artist struct {
+	Aid      int
+	Aname    string
+	Aaddress string
+}
 
 type Page struct {
 	Title string
@@ -29,15 +33,72 @@ type Page struct {
 // 	return ioutil.WriteFile(filename, p.Body, 0600)
 // }
 
+func dbSelect() []Artist {
+	artist := Artist{}
+	artists := []Artist{}
+	db := db.DbConn()
+	rows, err := db.Query("select id, name, address from artist")
+	if err != nil {
+		panic(err)
+	}
+
+	for rows.Next() {
+		var id int
+		var name, address string
+		err := rows.Scan(&id, &name, &address)
+		if err != nil {
+			panic(err)
+		}
+		artist.Aid = id
+		artist.Aname = name
+		artist.Aaddress = address
+		artists = append(artists, artist)
+	}
+	// fmt.Println(Artist{Aname: "sircoon"})
+	// fmt.Println(artists)
+	// fmt.Println(artist)
+	// fmt.Println(artist.Aid[0])
+	fmt.Println(artists[0].Aid)
+	defer db.Close()
+	return artists
+}
+
 // title 변수를 통해 파일이름을 생성한 후 파일의 내용을 읽어들여 Page literal에 대한 ptr 반환
 
-func loadPage(title string) (*Page, error) {
-	filename := title + ".txt"
-	body, err := ioutil.ReadFile(filename)
+func loadPage() (*Artist, error) {
+	artist := Artist{}
+	artists := []Artist{}
+	db := db.DbConn()
+	rows, err := db.Query("select id, name, address from artist")
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &Page{Title: title, Body: body}, nil
+
+	for rows.Next() {
+		var id int
+		var name, address string
+		err := rows.Scan(&id, &name, &address)
+		if err != nil {
+			panic(err)
+		}
+		artist.Aid = id
+		artist.Aname = name
+		artist.Aaddress = address
+		artists = append(artists, artist)
+	}
+	// fmt.Println(Artist{Aname: "sircoon"})
+	// fmt.Println(artists)
+	// fmt.Println(artist)
+	// fmt.Println(artist.Aid[0])
+	fmt.Println(artists[0].Aid)
+	defer db.Close()
+
+	// filename := title + ".txt"
+	// body, err := ioutil.ReadFile(filename)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	return &Artist{Aid: artists[0].Aid, Aname: artists[0].Aname, Aaddress: artists[0].Aaddress}, nil
 }
 
 // 사용자가 해당 페이지를 볼 수 있도록 함.
@@ -54,16 +115,18 @@ func loadPage(title string) (*Page, error) {
 //
 
 func editHandler(w http.ResponseWriter, r *http.Request, title string) {
-	p, err := loadPage(title)
+	table := dbSelect()
+
+	err := templates.ExecuteTemplate(w, "edit.html", table)
 	if err != nil {
-		p = &Page{Title: title}
+		panic(err)
 	}
-	renderTemplate(w, "edit", p)
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 
 	workname := r.FormValue("workname")
+	fmt.Println(workname)
 	artist := r.FormValue("artist")
 	price := r.FormValue("price")
 	description := r.FormValue("description")
@@ -140,6 +203,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 
 	db := db.DbConn()
 	var id int
+	var artistId int
 	err = db.QueryRow("SELECT id FROM file order by id desc limit 1").Scan(&id)
 	if err != nil {
 		id = 0
@@ -149,16 +213,46 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 
 	insForm, err := db.Prepare("INSERT INTO file(id, filename, filesize, filetype, path) VALUES(?,?,?,?,?)")
 	if err != nil {
+		fmt.Println("file")
 		panic(err.Error())
 	} else {
 		log.Println("data insert successfully . . .")
 	}
 	result, err := insForm.Exec(id+1, filename, filesize, filetype, path)
 	if err != nil {
+		fmt.Println("file")
 		log.Fatal(err)
 	}
 	n, err := result.RowsAffected()
 	fmt.Println(n, "rows affected")
+	log.Printf("Successfully Uploaded File\n")
+
+	err = db.QueryRow("SELECT id FROM work order by id desc limit 1").Scan(&artistId)
+	if err != nil {
+		id = 0
+		//log.Fatal(err)
+	}
+	// err = db.QueryRow("SELECT id FROM artist where name = ?",).Scan(&id)
+	// if err != nil {
+	// 	id = 0
+	// 	// //log.Fatal(err)
+	// }
+
+	insFormWork, err := db.Prepare("INSERT INTO work(id, name, artist_id,price, description,category,file_id) VALUES(?,?,?,?,?,?,?)")
+	if err != nil {
+		fmt.Println("work")
+		panic(err.Error())
+	} else {
+		log.Println("data insert successfully . . .")
+	}
+
+	resultWork, err := insFormWork.Exec(artistId+1, workname, artist, price, description, filetype, id)
+	if err != nil {
+		fmt.Println("work")
+		log.Fatal(err)
+	}
+	num, err := resultWork.RowsAffected()
+	fmt.Println(num, "rows affected")
 	log.Printf("Successfully Uploaded File\n")
 	db.Close()
 	// p := &Page{Title: title, Body: []byte(body)}
@@ -291,16 +385,7 @@ func getNFTInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
-	_, err := os.Stat(filepath.Join(".", "assets/stylesheets", "test.css"))
-	if err != nil {
-		panic(err)
-	}
-
-	// file2, err := os.ReadFile("./uploads/짱구.jpeg")
-	// fmt.Println(string(file2))
-	// fmt.Println(file2)
-
+	dbSelect()
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	//http.HandleFunc("/view", upload)
 
