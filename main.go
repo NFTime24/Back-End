@@ -210,7 +210,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 		//log.Fatal(err)
 	}
 	//fmt.Println(id)
-
+	id = id + 1
 	insForm, err := db.Prepare("INSERT INTO file(id, filename, filesize, filetype, path) VALUES(?,?,?,?,?)")
 	if err != nil {
 		fmt.Println("file")
@@ -218,7 +218,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	} else {
 		log.Println("data insert successfully . . .")
 	}
-	result, err := insForm.Exec(id+1, filename, filesize, filetype, path)
+	result, err := insForm.Exec(id, filename, filesize, filetype, path)
 	if err != nil {
 		fmt.Println("file")
 		log.Fatal(err)
