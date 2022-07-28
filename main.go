@@ -22,7 +22,7 @@ type Artist struct {
 
 func saveHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
-	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	// r.Header.Set("Content-Type", "application/multipart/form-data")
 	workname := r.FormValue("workname")
 	fmt.Println(workname)
 	artist := r.FormValue("artist")
@@ -243,7 +243,7 @@ func logging(next http.Handler) http.Handler {
 func main() {
 	router := httprouter.New()
 	router.GET("/", handler)
-	router.GET("/test", saveHandler)
+	router.POST("/test", saveHandler)
 	router.GET("/getNFTInfo", getNFTInfo)
 
 	log.Fatal(http.ListenAndServe(":80", router))
