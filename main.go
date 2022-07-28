@@ -242,7 +242,7 @@ func logging(next http.Handler) http.Handler {
 func main() {
 	router := httprouter.New()
 	router.GET("/", handler)
-	router.POST("/test", saveHandler)
+	router.GET("/test", saveHandler)
 	router.GET("/getNFTInfo", getNFTInfo)
 
 	log.Fatal(http.ListenAndServe(":80", router))
