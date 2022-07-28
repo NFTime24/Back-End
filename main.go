@@ -4,15 +4,14 @@ import (
 	"deukyunlee/protocol-camp/db"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"regexp"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/julienschmidt/httprouter"
 )
 
 type Artist struct {
@@ -21,83 +20,7 @@ type Artist struct {
 	Aaddress string
 }
 
-// type Page struct {
-// 	Title string
-// 	Body  []byte
-// }
-
-// Page의 Body 부분을 text file로 저장
-
-// func (p *Page) save() error {
-// 	filename := p.Title + ".txt"
-// 	return ioutil.WriteFile(filename, p.Body, 0600)
-// }
-
-func dbSelect() []Artist {
-	artist := Artist{}
-	artists := []Artist{}
-	db := db.DbConn()
-	rows, err := db.Query("select id, name, address from artist")
-	if err != nil {
-		panic(err)
-	}
-
-	for rows.Next() {
-		var id int
-		var name, address string
-		err := rows.Scan(&id, &name, &address)
-		if err != nil {
-			panic(err)
-		}
-		artist.Aid = id
-		artist.Aname = name
-		artist.Aaddress = address
-		artists = append(artists, artist)
-	}
-	defer db.Close()
-	return artists
-}
-
-// title 변수를 통해 파일이름을 생성한 후 파일의 내용을 읽어들여 Page literal에 대한 ptr 반환
-
-func loadPage() (*Artist, error) {
-	artist := Artist{}
-	artists := []Artist{}
-	db := db.DbConn()
-	rows, err := db.Query("select id, name, address from artist")
-	if err != nil {
-		panic(err)
-	}
-
-	for rows.Next() {
-		var id int
-		var name, address string
-		err := rows.Scan(&id, &name, &address)
-		if err != nil {
-			panic(err)
-		}
-		artist.Aid = id
-		artist.Aname = name
-		artist.Aaddress = address
-		artists = append(artists, artist)
-	}
-
-	fmt.Println(artists[0].Aid)
-	defer db.Close()
-
-	return &Artist{Aid: artists[0].Aid, Aname: artists[0].Aname, Aaddress: artists[0].Aaddress}, nil
-}
-
-func editHandler(w http.ResponseWriter, r *http.Request, title string) {
-	table := dbSelect()
-
-	err := templates.ExecuteTemplate(w, "edit.html", table)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
+func saveHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	workname := r.FormValue("workname")
 	fmt.Println(workname)
@@ -134,7 +57,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 
 	io.Copy(file, uploadFile)
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, filepath)
+	// fmt.Fprint(w, filepath)
 
 	info, err := os.Stat(filepath)
 	if err != nil {
@@ -219,28 +142,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	fmt.Println(num, "rows affected")
 	log.Printf("Successfully Uploaded File\n")
 	db.Close()
-	// p := &Page{Title: title, Body: []byte(body)}
-	// err := p.save()
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-	http.Redirect(w, r, "/view/"+title, http.StatusFound)
-}
-
-var templates = template.Must(template.ParseGlob("./templates/edit.html"))
-
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
-
-func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		m := validPath.FindStringSubmatch(r.URL.Path)
-		if m == nil {
-			http.NotFound(w, r)
-			return
-		}
-		fn(w, r, m[2])
-	}
+	fmt.Fprint(w, "file uploaded to"+filepath+"\n", num, " rows affected")
 }
 
 type NFTInfo struct {
@@ -267,7 +169,7 @@ type NFTInfoBundle struct {
 	NFTInfos []NFTInfo `json:"nft_infos"`
 }
 
-func getNFTInfo(w http.ResponseWriter, r *http.Request) {
+func getNFTInfo(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	nft_owner := r.URL.Query().Get("owner_address")
 
 	db := db.DbConn()
@@ -329,18 +231,19 @@ func getNFTInfo(w http.ResponseWriter, r *http.Request) {
 	w.Write(jData)
 	db.Close()
 }
-
+func handler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	fmt.Fprint(w, "Welcome to NFTime!\n")
+}
+func logging(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		next.ServeHTTP(w, r)
+	})
+}
 func main() {
-	dbSelect()
-	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
-	//http.HandleFunc("/view", upload)
+	router := httprouter.New()
+	router.GET("/", handler)
+	router.POST("/test", saveHandler)
+	router.GET("/getNFTInfo", getNFTInfo)
 
-	//http.Handle("/edit/*", http.StripPrefix("/edit/view", http.FileServer(http.Dir("./static"))))
-	http.HandleFunc("/getNFTInfo", getNFTInfo)
-	http.HandleFunc("/edit/", makeHandler(editHandler))
-	http.HandleFunc("/save/", makeHandler(saveHandler))
-	//http.Handle("/", http.FileServer(http.Dir("public")))
-	http.Handle("/css/", http.FileServer(http.Dir("./css/")))
-
-	log.Fatal(http.ListenAndServe(":80", nil))
+	log.Fatal(http.ListenAndServe(":80", router))
 }
