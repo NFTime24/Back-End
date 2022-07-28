@@ -21,7 +21,7 @@ type Artist struct {
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	// r.Header.Set("Content-Type", "application/multipart/form-data")
 	workname := r.FormValue("workname")
 	fmt.Println(workname)
