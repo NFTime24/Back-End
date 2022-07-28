@@ -16,6 +16,6 @@
         "version": "1.0"
     },
     "host": "petstore.swagger.io",
-    "basePath": "/",
+    "basePath": "/v2",
     "paths": {}
 }

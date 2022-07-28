@@ -12,6 +12,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/julienschmidt/httprouter"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type Artist struct {
@@ -20,11 +21,97 @@ type Artist struct {
 	Aaddress string
 }
 
+type WorkInfo struct {
+	Workid          int    `json: work_id`
+	Workname        string `json: work_name`
+	Workprice       int    `json: work_price`
+	Workdescription string `json: work_description`
+	Workcatogory    string `json: work_category`
+	Artistname      string `json: artist_name`
+	Artistaddress   string `json: artist_address`
+}
+
+func specificWork(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	workinfo := WorkInfo{}
+	workinfos := []WorkInfo{}
+	db := db.DbConn()
+	w_name := r.URL.Query().Get("w_name")
+	rows, err := db.Query(`select w.id, w.name, w.price, w.description, w.category, a.name, a.address  from work as w join artist as a where w.artist_id = a.id and w.name = ?;`, w_name)
+	if err != nil {
+		panic(err)
+	}
+
+	for rows.Next() {
+		var workid, workprice int
+		var workname, workdescription, workcategory, artistname, artistaddress string
+
+		err := rows.Scan(&workid, &workname, &workprice, &workdescription, &workcategory, &artistname, &artistaddress)
+		if err != nil {
+			panic(err)
+		}
+		workinfo.Workid = workid
+		workinfo.Workname = workname
+		workinfo.Workprice = workprice
+		workinfo.Workdescription = workdescription
+		workinfo.Workcatogory = workcategory
+		workinfo.Artistname = artistname
+		workinfo.Artistaddress = artistaddress
+
+		workinfos = append(workinfos, workinfo)
+	}
+	jData, err := json.Marshal(workinfos)
+
+	if err != nil {
+		fmt.Printf("%s", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write(jData)
+	db.Close()
+}
+
+func workInfoSearch(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	workinfo := WorkInfo{}
+	workinfos := []WorkInfo{}
+	db := db.DbConn()
+	rows, err := db.Query("select w.id, w.name, w.price, w.description, w.category, a.name, a.address from work as w join artist as a where w.artist_id = a.id")
+	if err != nil {
+		panic(err)
+	}
+
+	for rows.Next() {
+		var workid, workprice int
+		var workname, workdescription, workcategory, artistname, artistaddress string
+
+		err := rows.Scan(&workid, &workname, &workprice, &workdescription, &workcategory, &artistname, &artistaddress)
+		if err != nil {
+			panic(err)
+		}
+		workinfo.Workid = workid
+		workinfo.Workname = workname
+		workinfo.Workprice = workprice
+		workinfo.Workdescription = workdescription
+		workinfo.Workcatogory = workcategory
+		workinfo.Artistname = artistname
+		workinfo.Artistaddress = artistaddress
+
+		workinfos = append(workinfos, workinfo)
+	}
+	jData, err := json.Marshal(workinfos)
+
+	if err != nil {
+		fmt.Printf("%s", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write(jData)
+	db.Close()
+}
 func saveHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	// r.Header.Set("Content-Type", "application/multipart/form-data")
 	workname := r.FormValue("workname")
-	fmt.Println(workname)
 	artist := r.FormValue("artist")
 	price := r.FormValue("price")
 	description := r.FormValue("description")
@@ -109,16 +196,16 @@ func saveHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if err != nil {
 		fmt.Println("file")
 		panic(err.Error())
-	} else {
-		log.Println("data insert successfully . . .")
 	}
 	result, err := insForm.Exec(id, filename, filesize, filetype, path)
 	if err != nil {
 		fmt.Println("file")
 		log.Fatal(err)
+	} else {
+		log.Println("data inserted successfully . . .")
 	}
 	n, err := result.RowsAffected()
-	fmt.Println(n, "rows affected")
+	fmt.Println(n, "rows affected for file table")
 	log.Printf("Successfully Uploaded File\n")
 
 	err = db.QueryRow("SELECT id FROM work order by id desc limit 1").Scan(&artistId)
@@ -140,7 +227,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		log.Fatal(err)
 	}
 	num, err := resultWork.RowsAffected()
-	fmt.Println(num, "rows affected")
+	fmt.Println(num, "rows affected for work table")
 	log.Printf("Successfully Uploaded File\n")
 	db.Close()
 	fmt.Fprint(w, "file uploaded to"+filepath+"\n", num, " rows affected")
@@ -232,19 +319,39 @@ func getNFTInfo(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Write(jData)
 	db.Close()
 }
+
 func handler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	fmt.Fprint(w, "Welcome to NFTime!\n")
 }
-func logging(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(w, r)
-	})
+func swaggerHandler(res http.ResponseWriter, req *http.Request, p httprouter.Params) {
+	httpSwagger.WrapHandler(res, req)
 }
+
+// @title Swagger Example API
+// @version 1.0
+// @description This is a sample server Petstore server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host petstore.swagger.io
+// @BasePath /v2
 func main() {
 	router := httprouter.New()
+	router.ServeFiles("/assets/*filepath", http.Dir("assets"))
+	router.ServeFiles("/docs/*filepath", http.Dir("docs"))
+
+	http.Handle("/swagger", http.FileServer(http.Dir("./")))
+
 	router.GET("/", handler)
 	router.POST("/test", saveHandler)
-	router.GET("/getNFTInfo", getNFTInfo)
-
+	router.GET("/nft/specific", getNFTInfo)
+	router.GET("/work/full", workInfoSearch)
+	router.GET("/work/specific", specificWork)
 	log.Fatal(http.ListenAndServe(":80", router))
 }

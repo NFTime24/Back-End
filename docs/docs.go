@@ -31,7 +31,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "petstore.swagger.io",
-	BasePath:         "/",
+	BasePath:         "/v2",
 	Schemes:          []string{},
 	Title:            "Swagger Example API",
 	Description:      "This is a sample server Petstore server.",

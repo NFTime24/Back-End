@@ -1,4 +1,4 @@
-basePath: /
+basePath: /v2
 host: petstore.swagger.io
 info:
   contact:
