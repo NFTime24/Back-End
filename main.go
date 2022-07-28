@@ -21,10 +21,10 @@ type Artist struct {
 	Aaddress string
 }
 
-type Page struct {
-	Title string
-	Body  []byte
-}
+// type Page struct {
+// 	Title string
+// 	Body  []byte
+// }
 
 // Page의 Body 부분을 text file로 저장
 
@@ -54,11 +54,6 @@ func dbSelect() []Artist {
 		artist.Aaddress = address
 		artists = append(artists, artist)
 	}
-	// fmt.Println(Artist{Aname: "sircoon"})
-	// fmt.Println(artists)
-	// fmt.Println(artist)
-	// fmt.Println(artist.Aid[0])
-	fmt.Println(artists[0].Aid)
 	defer db.Close()
 	return artists
 }
@@ -86,33 +81,12 @@ func loadPage() (*Artist, error) {
 		artist.Aaddress = address
 		artists = append(artists, artist)
 	}
-	// fmt.Println(Artist{Aname: "sircoon"})
-	// fmt.Println(artists)
-	// fmt.Println(artist)
-	// fmt.Println(artist.Aid[0])
+
 	fmt.Println(artists[0].Aid)
 	defer db.Close()
 
-	// filename := title + ".txt"
-	// body, err := ioutil.ReadFile(filename)
-	// if err != nil {
-	// 	return nil, err
-	// }
 	return &Artist{Aid: artists[0].Aid, Aname: artists[0].Aname, Aaddress: artists[0].Aaddress}, nil
 }
-
-// 사용자가 해당 페이지를 볼 수 있도록 함.
-
-// func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
-// 	p, err := loadPage(title)
-// 	if err != nil {
-// 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
-// 		return
-// 	}
-// 	renderTemplate(w, "view", p)
-// }
-
-//
 
 func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 	table := dbSelect()
@@ -186,19 +160,15 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	switch extension {
 	case ".png":
 		filetype = "image/png"
-		//fmt.Println("image/png")
 	case ".jpg":
 		filetype = "image/jpg"
-		//fmt.Println("image/jpg")
+
 	case ".jpeg":
 		filetype = "image/jpeg"
-		//fmt.Println("image/jpeg")
 	case ".gif":
 		filetype = "image/gif"
-		//fmt.Println("image/gif")
 	case ".mp4":
 		filetype = "video/mp4"
-		//fmt.Println("video/mp4")
 	}
 
 	db := db.DbConn()
@@ -230,13 +200,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	err = db.QueryRow("SELECT id FROM work order by id desc limit 1").Scan(&artistId)
 	if err != nil {
 		id = 0
-		//log.Fatal(err)
 	}
-	// err = db.QueryRow("SELECT id FROM artist where name = ?",).Scan(&id)
-	// if err != nil {
-	// 	id = 0
-	// 	// //log.Fatal(err)
-	// }
 
 	insFormWork, err := db.Prepare("INSERT INTO work(id, name, artist_id,price, description,category,file_id) VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
@@ -265,13 +229,6 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 var templates = template.Must(template.ParseGlob("./templates/edit.html"))
-
-func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-	err := templates.ExecuteTemplate(w, tmpl+".html", p)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
 
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 
@@ -362,6 +319,7 @@ func getNFTInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jData, err := json.Marshal(nftinfos)
+
 	if err != nil {
 		fmt.Printf("%s", err)
 	}
@@ -369,7 +327,6 @@ func getNFTInfo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(jData)
-
 	db.Close()
 }
 
