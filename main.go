@@ -323,8 +323,11 @@ func getNFTInfo(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 func handler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	fmt.Fprint(w, "Welcome to NFTime!\n")
 }
-func swaggerHandler(res http.ResponseWriter, req *http.Request, p httprouter.Params) {
-	httpSwagger.WrapHandler(res, req)
+
+func swaggerHandler(w http.ResponseWriter, r *http.Request) {
+	swaggerFileUrl := "http://localhost:80/docs/swagger.json"
+	handler := httpSwagger.Handler(httpSwagger.URL(swaggerFileUrl))
+	handler.ServeHTTP(w, r)
 }
 
 // @title Swagger Example API
@@ -342,11 +345,28 @@ func swaggerHandler(res http.ResponseWriter, req *http.Request, p httprouter.Par
 // @host petstore.swagger.io
 // @BasePath /v2
 func main() {
+	// r := chi.NewRouter()
 	router := httprouter.New()
+
 	router.ServeFiles("/assets/*filepath", http.Dir("assets"))
 	router.ServeFiles("/docs/*filepath", http.Dir("docs"))
 
-	http.Handle("/swagger", http.FileServer(http.Dir("./")))
+	// router.HandlerFunc(http.MethodGet, "/docs/index.html", swaggerHandler)
+	// router.GET("/docs", swaggerHandler)
+	// docs, err := chai.OpenAPI2(r)
+	// if err != nil {
+	// 	panic(fmt.Sprintf("failed to generate the swagger spec: %+v", err))
+	// }
+	// r.Get("/swagger/*", httpSwagger.Handler(
+	// 	httpSwagger.URL("http://localhost:80/docs/swagger.json"), //The url pointing to API definition
+	// ))
+	// addCustomDocs(docs)
+	// router.GET("/swagger", httpSwagger.WrapHandler)
+	// router.Handler("/swagger", httpSwagger.WrapHandler)
+	// // router.Handle("/swagger", httpSwagger.WrapHandler)
+	// router.HandlerFunc("/swagger", httpSwagger.WrapHandler)
+
+	//http.Handle("/swagger", httpSwagger.WrapHandler)
 
 	router.GET("/", handler)
 	router.POST("/test", saveHandler)
