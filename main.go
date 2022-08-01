@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -344,13 +345,67 @@ func swaggerHandler(w http.ResponseWriter, r *http.Request) {
 
 // @host petstore.swagger.io
 // @BasePath /v2
+
+func showImg(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	// imgName := req.URL.Query().Get("name")
+	// vars := mux.Vars(req)
+
+	imgName := ps.ByName("imgName")
+	fmt.Println(imgName)
+	text := strings.IndexByte(imgName, '.')
+	extension := imgName[text:]
+	fmt.Println("extension: ", extension)
+	var path string
+	db := db.DbConn()
+	selDB, err := db.Query("SELECT path FROM file where filename=?", imgName)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for selDB.Next() {
+		err = selDB.Scan(&path)
+		if err != nil {
+			panic(err)
+		}
+	}
+	var filetype string
+	switch extension {
+	case ".png":
+		filetype = "image/png"
+	case ".jpg":
+		filetype = "image/jpg"
+
+	case ".jpeg":
+		filetype = "image/jpeg"
+	case ".gif":
+		filetype = "image/gif"
+	case ".mp4":
+		filetype = "video/mp4"
+	}
+	if imgName != "" && path != "" {
+		path = `./` + path
+
+		fmt.Println(path)
+		buf, err := ioutil.ReadFile(path)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		res.Header().Set("Content-Type", filetype)
+		res.Write(buf)
+	} else {
+		panic(err)
+	}
+}
+
 func main() {
 	// r := chi.NewRouter()
 	router := httprouter.New()
 
-	router.ServeFiles("/assets/*filepath", http.Dir("assets"))
+	// router.ServeFiles("/assets/*filepath", http.Dir("assets"))
 	router.ServeFiles("/docs/*filepath", http.Dir("docs"))
-
+	// router.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	// router.HandlerFunc(http.MethodGet, "/docs/index.html", swaggerHandler)
 	// router.GET("/docs", swaggerHandler)
 	// docs, err := chai.OpenAPI2(r)
@@ -367,7 +422,7 @@ func main() {
 	// router.HandlerFunc("/swagger", httpSwagger.WrapHandler)
 
 	//http.Handle("/swagger", httpSwagger.WrapHandler)
-
+	router.GET("/assets/uploadimage/:imgName", showImg)
 	router.GET("/", handler)
 	router.POST("/test", saveHandler)
 	router.GET("/nft/specific", getNFTInfo)
