@@ -405,7 +405,7 @@ func main() {
 
 	// router.ServeFiles("/assets/*filepath", http.Dir("assets"))
 	router.ServeFiles("/docs/*filepath", http.Dir("docs"))
-	// router.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
+	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	// router.HandlerFunc(http.MethodGet, "/docs/index.html", swaggerHandler)
 	// router.GET("/docs", swaggerHandler)
 	// docs, err := chai.OpenAPI2(r)
@@ -423,10 +423,11 @@ func main() {
 
 	//http.Handle("/swagger", httpSwagger.WrapHandler)
 	router.GET("/assets/uploadimage/:imgName", showImg)
+	// router.GET("/assets/uploadvideo/:videoName", showVideo)
 	router.GET("/", handler)
 	router.POST("/test", saveHandler)
 	router.GET("/nft/specific", getNFTInfo)
 	router.GET("/work/full", workInfoSearch)
 	router.GET("/work/specific", specificWork)
-	log.Fatal(http.ListenAndServe(":80", router))
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
