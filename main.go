@@ -258,7 +258,7 @@ type NFTInfoBundle struct {
 	NFTInfos []NFTInfo `json:"nft_infos"`
 }
 
-func getNFTInfo(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func getNFTInfo(w http.ResponseWriter, r *http.Request) {
 	nft_owner := r.URL.Query().Get("owner_address")
 
 	db := db.DbConn()
@@ -426,7 +426,7 @@ func main() {
 	// router.GET("/assets/uploadvideo/:videoName", showVideo)
 	router.GET("/", handler)
 	router.POST("/test", saveHandler)
-	router.GET("/nft/specific", getNFTInfo)
+	http.HandleFunc("/nft/specific", getNFTInfo)
 	router.GET("/work/full", workInfoSearch)
 	router.GET("/work/specific", specificWork)
 	log.Fatal(http.ListenAndServe(":80", nil))
