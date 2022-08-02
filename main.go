@@ -205,6 +205,7 @@ func main() {
 	// fmt.Println(file2)
 
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
+	http.Handle("/javascripts/", http.StripPrefix("/javascripts", http.FileServer(http.Dir("javascripts"))))
 	//http.HandleFunc("/view", upload)
 
 	//http.Handle("/edit/*", http.StripPrefix("/edit/view", http.FileServer(http.Dir("./static"))))

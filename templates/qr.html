@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .qr-code {
+              max-width: 200px;
+              margin: 10px;
+            }
+        </style>
+
+        <script type="text/javascript" src="/javascripts/jquery.min.js"></script>
+        <script type="text/javascript" src="/javascripts/qrcode.js"></script>
+
+        <title>QR Code Generator</title>
+    </head>
+    <body>
+        <h1>request_key: {{.RequestKey}}</h1>
+        <div id="qrcode"></div>
+        <script type="text/javascript">
+            var qrcode = new QRCode(document.getElementById("qrcode"), {
+                text: "{{.RequestQR}}",
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        </script>
+        <h1>status: {{.Status}}</h1>
+        <h1>expiration_time {{printf "%d" .ExpirationTime}}</h1>
+    </body>
+</html>
+

@@ -20,7 +20,7 @@ type NFTInfo struct {
 	Path              string `json:"path"`
 	ThumbnailPath     string `json:"thumbnail_path"`
 	ArtistName        string `json:"artist_name"`
-	ArtistProfilePath string `json:"artist_profile_path`
+	ArtistProfilePath string `json:"artist_profile_path"`
 	ArtistAddress     string `json:"artist_address"`
 }
 
