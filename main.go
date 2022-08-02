@@ -209,6 +209,7 @@ func main() {
 
 	//http.Handle("/edit/*", http.StripPrefix("/edit/view", http.FileServer(http.Dir("./static"))))
 	http.HandleFunc("/getNFTInfo", httpHandlers.GetNFTInfo)
+	http.HandleFunc("/prepareAuth", httpHandlers.PrepareAuth)
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
 	//http.Handle("/", http.FileServer(http.Dir("public")))
