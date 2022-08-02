@@ -13,6 +13,8 @@ func Init() *echo.Echo {
 	e.Static("/assets", "assets")
 	e.GET("/users", api.GetFiles)
 	e.GET("/works", api.GetWorks)
+	e.GET("prepareAuth", api.PrepareAuth)
+
 	e.GET("/file-upload", api.UploadWork)
 	return e
 }
