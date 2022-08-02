@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 )
@@ -28,15 +29,15 @@ func PrepareAuth(w http.ResponseWriter, r *http.Request) {
 	}
 	var jData KlipResponse
 	json.Unmarshal(body, &jData)
-	// t, err := template.ParseGlob("./templates/qr.html")
-	// if err != nil {
-	// 	fmt.Printf(err.Error())
-	// }
+	t, err := template.ParseGlob("./templates/qr.html")
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
 	jData.RequestQR = "intent://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
 	jData.RequestQR += "0b0ee0ad-62b3-4146-980b-531b3201265d"
 	jData.RequestQR += "#Intent;scheme=kakaotalk;package=com.kakao.talk;end"
 	fmt.Printf(jData.RequestQR)
 
-	http.Redirect(w, r, jData.RequestQR, http.StatusFound)
-	//t.Execute(w, jData)
+	t.Execute(w, jData)
+	//http.Redirect(w, r, jData.RequestQR, http.StatusFound)
 }
