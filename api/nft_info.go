@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/duke/db"
@@ -33,21 +34,33 @@ type NFTInfoBundle struct {
 	NFTInfos []NFTInfo `json:"nft_infos"`
 }
 
+func GetTest(c echo.Context) error {
+	db := db.DbConn()
+	var name int
+
+	err := db.QueryRow("SELECT id FROM files WHERE id = 1").Scan(&name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(name)
+	return c.JSON(http.StatusOK, name)
+}
 func GetNFTInfo(c echo.Context) error {
 	nft_owner := c.QueryParam("owner_address")
 	db := db.DbConn()
 	selDB, err := db.Query(fmt.Sprintf(`
 	select 
-		n.nft_id, n.owner_address, w.name as "work_name", w.price as "work_price", w.description, w.category,
+		n.nft_id, u.address as "owner_address", w.name as "work_name", w.price as "work_price", w.description, w.category,
 		f.filename, f.filesize, f.filetype, f.path, t.path as "thumbnail_path", 
 		a.name as "artist_name", ifnull(p.path, "") as "artist_profile_path", a.address as "artist_address"
-	from protocol_camp.nft as n
-	left join protocol_camp.work as w on n.work_id = w.id
-	left join protocol_camp.file as f on w.file_id = f.id
-	left join protocol_camp.file as t on f.thumbnail_id = t.id
-	left join protocol_camp.artist as a on w.artist_id = a.id
-	left join protocol_camp.file as p on a.profile_id = p.id
-	where n.owner_address = "%s"
+	from test.users as u
+	left join test.nfts as n on u.id = n.owner_id
+	left join test.works as w on n.works_id = w.work_id
+	left join test.files as f on w.file_id = f.id
+	left join test.files as t on f.thumbnail_id = t.id
+	left join test.artists as a on w.artist_id = a.id
+	left join test.files as p on a.profile_id = p.id
+	where u.id = "%s"
 	`, nft_owner))
 	if err != nil {
 		panic(err.Error())
