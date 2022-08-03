@@ -27,7 +27,7 @@ func GetWorks(c echo.Context) error {
 func UploadWork(c echo.Context) error {
 	db := db.ConnectDB()
 	c.Request().ParseMultipartForm(256 >> 20)
-
+	// c.Request().ContentLength
 	thumb_file, err := c.FormFile("thumb_file")
 	if err != nil {
 		panic(err)

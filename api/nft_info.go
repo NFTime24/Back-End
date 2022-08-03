@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -45,13 +44,14 @@ func GetTest(c echo.Context) error {
 	fmt.Println(name)
 	return c.JSON(http.StatusOK, name)
 }
+
 func GetNFTInfo(c echo.Context) error {
 	nft_owner := c.QueryParam("owner_address")
 	db := db.DbConn()
 	selDB, err := db.Query(fmt.Sprintf(`
 	select 
 		n.nft_id, u.address as "owner_address", w.name as "work_name", w.price as "work_price", w.description, w.category,
-		f.filename, f.filesize, f.filetype, f.path, t.path as "thumbnail_path", 
+		f.filename, f.filesize, f.filetype, f.path, ifnull(t.path, "") as "thumbnail_path", 
 		a.name as "artist_name", ifnull(p.path, "") as "artist_profile_path", a.address as "artist_address"
 	from test.users as u
 	left join test.nfts as n on u.id = n.owner_id
@@ -60,7 +60,7 @@ func GetNFTInfo(c echo.Context) error {
 	left join test.files as t on f.thumbnail_id = t.id
 	left join test.artists as a on w.artist_id = a.id
 	left join test.files as p on a.profile_id = p.id
-	where u.id = "%s"
+	where u.address = "%s"
 	`, nft_owner))
 	if err != nil {
 		panic(err.Error())
@@ -96,11 +96,13 @@ func GetNFTInfo(c echo.Context) error {
 		nftinfos.NFTInfos = append(nftinfos.NFTInfos, *nftinfo)
 	}
 
-	jData, err := json.Marshal(nftinfos)
-	if err != nil {
-		fmt.Printf("%s", err)
-	}
+	// jData, err := json.Marshal(nftinfos)
+	// if err != nil {
+	// 	fmt.Printf("%s", err)
+	// }
+
+	// fmt.Printf("%s", string(jData))
 
 	db.Close()
-	return c.JSON(http.StatusOK, jData)
+	return c.JSON(http.StatusOK, nftinfos)
 }
