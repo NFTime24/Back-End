@@ -19,7 +19,7 @@ type KlipResponse struct {
 
 func PrepareAuth(c echo.Context) error {
 
-	reqBody := bytes.NewBufferString(`{"bapp": { "name" : "My BApp" }, "type": "execute_contract", "transaction": { "to": "0xFf1C1e55826DD95C44681BfCd88DCB32eE86B793", "value": "0", "abi": "{\"inputs\": [{\"internalType\": \"string\",\"name\": \"artist_address\",\"type\": \"string\"}],\"name\": \"mintArt\",\"outputs\": [{\"internalType\": \"uint256\",\"name\": \"\",\"type\": \"uint256\"}],\"stateMutability\": \"nonpayable\",\"type\": \"function\"}", "params": "[\"0xF39E4961C046BA913f835c08Bf25De348184F3a8\"]"} }`)
+	reqBody := bytes.NewBufferString(`{"bapp": { "name" : "NFTime" }, "type": "execute_contract", "transaction": { "to": "0xFf1C1e55826DD95C44681BfCd88DCB32eE86B793", "value": "0", "abi": "{\"inputs\": [{\"internalType\": \"string\",\"name\": \"artist_address\",\"type\": \"string\"}],\"name\": \"mintArt\",\"outputs\": [{\"internalType\": \"uint256\",\"name\": \"\",\"type\": \"uint256\"}],\"stateMutability\": \"nonpayable\",\"type\": \"function\"}", "params": "[\"0xF39E4961C046BA913f835c08Bf25De348184F3a8\"]"} }`)
 	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
 	if err != nil {
 		fmt.Printf(err.Error())
