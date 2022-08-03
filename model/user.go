@@ -19,7 +19,7 @@ type Artist struct {
 }
 
 type User struct {
-	ID        uint   `gorm:"primarykey;autoIncrement:false"`
+	ID        uint   `gorm:"primarykey;"`
 	Address   string `gorm:"unique"`
 	Nickname  string
 	File      File `gorm:"foreignkey:ProfileID"`
@@ -27,10 +27,10 @@ type User struct {
 }
 
 type Work struct {
-	WorkID      uint `gorm:"primarykey;autoIncrement:false"`
+	WorkID      uint `gorm:"primarykey;"`
 	Name        string
 	Price       uint
-	description string
+	Description string
 	Category    string
 	File        File `gorm:"foreignkey:FileID"`
 	FileID      uint
