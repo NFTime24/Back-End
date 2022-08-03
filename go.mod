@@ -6,6 +6,8 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/tkanos/gonfig v0.0.0-20210106201359-53e13348de2f
+	gorm.io/driver/mysql v1.3.5
+	gorm.io/gorm v1.23.8
 )
 
 require (
@@ -24,6 +26,4 @@ require (
 	golang.org/x/sys v0.0.0-20211103235746-7861aae1554b // indirect
 	golang.org/x/text v0.3.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gorm.io/driver/mysql v1.3.5 // indirect
-	gorm.io/gorm v1.23.8 // indirect
 )
