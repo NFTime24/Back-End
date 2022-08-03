@@ -16,7 +16,7 @@ func Init() *echo.Echo {
 	e.GET("prepareAuth", api.PrepareAuth)
 	e.GET("/getNFTInfo", api.GetNFTInfo)
 	e.GET("/test", api.GetTest)
-	e.GET("/test2", api.TestGo)
+	// e.GET("/test2", api.TestGo)
 	e.GET("/file-upload", api.UploadWork)
 	return e
 }

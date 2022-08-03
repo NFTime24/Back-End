@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -26,36 +27,46 @@ func GetWorks(c echo.Context) error {
 
 func UploadWork(c echo.Context) error {
 	db := db.ConnectDB()
+	err := c.Request().ParseMultipartForm(512 >> 20)
+	if err != nil {
+		panic(err)
+	}
 
 	thumb_dirname := "assets/uploadimage"
-	// dirname := "assets/uploadimage"
+	dirname := "assets/uploadimage"
 	var thumb_filetype string
 	var thumb_tempFile *os.File
-	err := c.Request().ParseMultipartForm(256 >> 20)
-
+	var filetype string
+	var tempFile *os.File
+	// Multipart form
+	// form := c.Request().MultipartForm.File["thumbnail_file"]
 	if err != nil {
-		panic(err)
+		log.Println(err.Error())
+		return err
 	}
-
 	thumb_file, err := c.FormFile("thumbnail_file")
+	files := c.Request().MultipartForm.File["thumbnail_file"]
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(thumb_file)
+	// fmt.Println(thumb_file)
 	thumb_filename := thumb_file.Filename
 	os.MkdirAll(thumb_dirname, 0777)
-	thumb_filepath := fmt.Sprintf("%s/%s", thumb_dirname, thumb_filename)
+	// thumb_filepath := fmt.Sprintf("%s/%s", thumb_dirname, thumb_filename)
 	thumb_fileTemp := fmt.Sprintf("%s", thumb_dirname)
 	thumb_text := strings.IndexByte(thumb_filename, '.')
 	thumb_extension := thumb_filename[thumb_text:]
 
-	form := c.Request().MultipartForm
-	for _, file := range form.File {
-		// src, err := file[0].Open()
-		thumb_file, err := file[0].Open()
+	fmt.Println(thumb_extension)
+	// files := form.File["thumbnail_file"]
+	for _, file := range files {
+		thumb_file, err := file.Open()
 		if err != nil {
+			log.Println(err.Error())
 			return err
 		}
+		fmt.Println(thumb_file)
+		defer thumb_file.Close()
 		switch thumb_extension {
 		case ".png":
 			thumb_tempFile, err = ioutil.TempFile(thumb_fileTemp, "upload-*.png")
@@ -67,31 +78,22 @@ func UploadWork(c echo.Context) error {
 			thumb_tempFile, err = ioutil.TempFile(thumb_fileTemp, "upload-*.jpeg")
 			thumb_filetype = "image/jpeg"
 		case ".mp4":
-			thumb_tempFile, err = ioutil.TempFile(thumb_fileTemp, "upload-*.jpeg")
-			thumb_filetype = "image/jpeg"
+			thumb_tempFile, err = ioutil.TempFile(thumb_fileTemp, "upload-*.mp4")
+			thumb_filetype = "video/mp4"
 		}
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("this:", thumb_tempFile.Name())
 
-		defer thumb_tempFile.Close()
 		if _, err = io.Copy(thumb_tempFile, thumb_file); err != nil {
 			return err
 		}
-		fmt.Println(thumb_filepath)
+
+		defer thumb_tempFile.Close()
+
 		defer thumb_file.Close()
 
 	}
-
-	// thumb_src, err := thumb_file.Open()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer thumb_src.Close()
-
-	// dst, err := os.Create(filepath)
-
 	thumb_tempPath := thumb_tempFile.Name()
 	thumb_filesize := uint(thumb_file.Size)
 
@@ -105,98 +107,80 @@ func UploadWork(c echo.Context) error {
 	thumb_insertFile := model.File{ID: thumb_id, Filename: thumb_filename, Filesize: thumb_filesize, Filetype: thumb_filetype, Path: thumb_tempPath}
 	db.Create(&thumb_insertFile)
 
-	/*
+	// Multipart form
+	// form := c.Request().MultipartForm.File["thumbnail_file"]
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+	file, err := c.FormFile("upload_file")
+	upload_files := c.Request().MultipartForm.File["upload_file"]
+	if err != nil {
+		panic(err)
+	}
+	// fmt.Println(thumb_file)
+	filename := file.Filename
 
+	// thumb_filepath := fmt.Sprintf("%s/%s", thumb_dirname, thumb_filename)
 
+	text := strings.IndexByte(filename, '.')
+	extension := filename[text:]
+	fmt.Println(extension)
+	if extension == ".mp4" {
+		dirname = "assets/uploadvideo"
+		fmt.Println("here")
+		os.MkdirAll(dirname, 0777)
+	}
+	fileTemp := fmt.Sprintf("%s", dirname)
+	fmt.Println(extension)
+	// files := form.File["thumbnail_file"]
+	for _, file2 := range upload_files {
+		file, err := file2.Open()
+		if err != nil {
+			log.Println(err.Error())
+			return err
+		}
+		fmt.Println(file2)
+		defer file.Close()
+		switch extension {
+		case ".png":
+			tempFile, err = ioutil.TempFile(fileTemp, "upload-*.png")
+			filetype = "image/png"
+		case ".jpg":
+			tempFile, err = ioutil.TempFile(fileTemp, "upload-*.jpg")
+			filetype = "image/jpg"
+		case ".jpeg":
+			tempFile, err = ioutil.TempFile(fileTemp, "upload-*.jpeg")
+			filetype = "image/jpeg"
+		case ".mp4":
+			tempFile, err = ioutil.TempFile(fileTemp, "upload-*.mp4")
+			filetype = "video/mp4"
+		}
+		if err != nil {
+			panic(err)
+		}
+		// fmt.Println("this:", thumb_tempFile.Name())
 
+		if _, err = io.Copy(tempFile, file); err != nil {
+			return err
+		}
+		// fmt.Println(thumb_filepath)
+		defer tempFile.Close()
 
+		defer file.Close()
 
+	}
+	tempPath := tempFile.Name()
+	filesize := uint(file.Size)
 
+	var id uint
+	var filesIs model.File
 
+	db.Model(&filesIs).Pluck("Id", &id)
 
+	id += 1
 
-
-
-
-
-
-
-
-
-	 */
-	// file, err := c.FormFile("upload_file")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// filename := file.Filename
-
-	// src, err := file.Open()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer src.Close()
-
-	// textname := strings.IndexByte(filename, '.')
-	// extensionText := filename[textname:]
-	// if extensionText == ".mp4" {
-	// 	dirname = "assets/uploadvideo"
-	// 	os.MkdirAll(dirname, 0777)
-	// }
-
-	// filepath := fmt.Sprintf("%s/%s", dirname, filename)
-	// fileTemp := fmt.Sprintf("%s", dirname)
-	// text := strings.IndexByte(filename, '.')
-	// extension := filename[text:]
-	// var filetype string
-	// var tempFile *os.File
-	// // dst, err := os.Create(filepath)
-	// switch extension {
-	// case ".png":
-	// 	tempFile, err = ioutil.TempFile(fileTemp, "upload-*.png")
-	// 	filetype = "image/png"
-	// case ".jpg":
-	// 	tempFile, err = ioutil.TempFile(fileTemp, "upload-*.jpg")
-	// 	filetype = "image/jpg"
-	// case ".jpeg":
-	// 	tempFile, err = ioutil.TempFile(fileTemp, "upload-*.jpeg")
-	// 	filetype = "image/jpeg"
-	// case ".mp4":
-	// 	tempFile, err = ioutil.TempFile(fileTemp, "upload-*.mp4")
-	// 	filetype = "video/mp4"
-	// }
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("this:", tempFile.Name())
-
-	// defer tempFile.Close()
-	// fmt.Println(filepath)
-
-	// if _, err = io.Copy(tempFile, src); err != nil {
-	// 	return err
-	// }
-
-	// fmt.Println(filetype)
-	// tempPath := tempFile.Name()
-	// path := filepath[2:]
-	// filesize := uint(file.Size)
-	// fmt.Println("filepath: ", tempPath)
-	// fmt.Println("path: ", path)
-	// fmt.Println("filename: ", filename)
-	// fmt.Println("filetype: ", filetype)
-	// fmt.Println("filesize: ", filesize)
-
-	// var id uint
-	// var thumbnail_id uint
-	// var files model.File
-
-	// db.Model(&files).Pluck("Id", &id)
-	// db.Model(&files).Pluck("Id", &thumbnail_id)
-	// id += 1
-
-	// insertFile := model.File{ID: id, Filename: filename, Filesize: filesize, Filetype: filetype, Path: tempPath, ThumbnailID: &thumbnail_id}
-	// db.Create(&insertFile)
-
-	// return c.JSON(http.StatusOK, insertFile)
-	return c.JSON(http.StatusOK, "good")
+	insertFile := model.File{ID: id, Filename: filename, Filesize: filesize, Filetype: filetype, Path: tempPath, ThumbnailID: &thumb_id}
+	db.Create(&insertFile)
+	return c.JSON(http.StatusOK, insertFile)
 }
