@@ -126,5 +126,7 @@ func GetKlipResult(c echo.Context) error {
 	}
 
 	str := fmt.Sprintf("%s", body)
+	fmt.Printf("%s\n", body)
+	fmt.Printf("%s\n", string(body))
 	return c.String(http.StatusOK, str)
 }
