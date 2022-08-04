@@ -94,6 +94,7 @@ func MintArt(c echo.Context) error {
 	// 	fmt.Printf(err.Error())
 	// }
 	fmt.Printf("requestkey: %s \n", jData.RequestKey)
+	klipRKeyMap[randUint] = jData.RequestKey
 	jData.RequestURL = "intent://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
 	jData.RequestURL += jData.RequestKey
 	jData.RequestURL += "#Intent;scheme=kakaotalk;package=com.kakao.talk;end"
@@ -111,6 +112,19 @@ func GetKlipResult(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusForbidden, "key errored")
 	}
-	str := fmt.Sprintf("%d", key)
+	reqKey := klipRKeyMap[key]
+
+	httpStr := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", reqKey)
+	resp, err := http.Get(httpStr)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	str := fmt.Sprintf("%s", body)
 	return c.String(http.StatusOK, str)
 }
