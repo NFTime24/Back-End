@@ -1,11 +1,12 @@
 package main
 
 import (
+	"github.com/duke/db"
 	"github.com/duke/route"
 )
 
 func main() {
-	//db.Init()
+	db.Init()
 	e := route.Init()
 
 	e.Logger.Fatal(e.Start(":80"))
