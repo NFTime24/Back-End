@@ -19,7 +19,7 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: NFT
+      summary: Get specific NFT
       tags:
       - NFT
   /works:
@@ -36,5 +36,7 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: NFT
+      summary: get specific work
+      tags:
+      - Work
 swagger: "2.0"

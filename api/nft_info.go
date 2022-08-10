@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// @Summary NFT
+// @Summary Get specific NFT
 // @Description Get nft info
 // @Tags NFT
 // @Accept json

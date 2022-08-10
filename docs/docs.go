@@ -28,7 +28,7 @@ const docTemplate = `{
                 "tags": [
                     "NFT"
                 ],
-                "summary": "NFT",
+                "summary": "Get specific NFT",
                 "parameters": [
                     {
                         "type": "string",
@@ -50,7 +50,10 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "NFT",
+                "tags": [
+                    "Work"
+                ],
+                "summary": "get specific work",
                 "parameters": [
                     {
                         "type": "string",

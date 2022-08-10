@@ -20,7 +20,7 @@
                 "tags": [
                     "NFT"
                 ],
-                "summary": "NFT",
+                "summary": "Get specific NFT",
                 "parameters": [
                     {
                         "type": "string",
@@ -42,7 +42,10 @@
                 "produces": [
                     "application/json"
                 ],
-                "summary": "NFT",
+                "tags": [
+                    "Work"
+                ],
+                "summary": "get specific work",
                 "parameters": [
                     {
                         "type": "string",

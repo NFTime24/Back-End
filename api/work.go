@@ -14,8 +14,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// @Summary NFT
+// @Summary get specific work
 // @Description Get works
+// @Tags Work
 // @Accept json
 // @Produce json
 // @Param name query string true "name"
