@@ -14,7 +14,9 @@ func Init() *echo.Echo {
 	e.GET("/", api.Home)
 	e.Static("/assets", "assets")
 	e.GET("/users", api.GetFiles)
-	e.GET("/works", api.GetWorks)
+	e.GET("/work/specific", api.GetSpecificWork)
+	e.GET("/work/top10", api.GetTop10Works)
+
 	e.GET("prepareAuth", api.PrepareAuth)
 	e.GET("/mintArt", api.MintArt)
 	e.GET("/getKlipResult", api.GetKlipResult)
