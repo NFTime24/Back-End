@@ -22,19 +22,19 @@ func GetNFTInfoWithId(c echo.Context) error {
 	nft_id, _ := strconv.ParseUint(nft_id_str, 10, 64)
 
 	type Result struct {
-		NftId         int
-		WorkName      string
-		Price         int
-		Description   string
-		WorkCategory  string
-		FileName      string
-		FileSize      int
-		FileType      string
-		FilePath      string
-		ThumbnailPath string
-		ArtistName    string
-		ProfilePath   string
-		ArtistAddress string
+		NftId         int    `json:"nft_id"`
+		WorkName      string `json:"work_name"`
+		Price         int    `json:"work_price"`
+		Description   string `json:"description"`
+		WorkCategory  string `json:"category"`
+		FileName      string `json:"filename"`
+		FileSize      int    `json:"filesize"`
+		FileType      string `json:"filetype"`
+		FilePath      string `json:"path"`
+		ThumbnailPath string `json:"thumbnail_path"`
+		ArtistName    string `json:"artist_name"`
+		ProfilePath   string `json:"profile_path"`
+		ArtistAddress string `json:"artist_address"`
 	}
 
 	db := db.ConnectDB()
