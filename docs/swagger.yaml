@@ -1,0 +1,23 @@
+basePath: /
+host: localhost:80
+info:
+  contact: {}
+  title: NFTime Sample Swagger API
+  version: "1.0"
+paths:
+  /getNFTInfo:
+    get:
+      consumes:
+      - application/json
+      description: Get nft info
+      parameters:
+      - description: NFT owner_address
+        in: query
+        name: example
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: NFT
+swagger: "2.0"

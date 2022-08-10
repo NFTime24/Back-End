@@ -5,7 +5,7 @@ import (
 
 	"github.com/duke/db"
 	"github.com/duke/model"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func GetFiles(c echo.Context) error {

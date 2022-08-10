@@ -11,18 +11,28 @@ import (
 
 	"github.com/duke/db"
 	"github.com/duke/model"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func GetWorks(c echo.Context) error {
+
+	// 구조체 멤버변수 이름과 DB에서 가져오는 컬럼명이 일치해야함
+	type Result struct {
+		WorkName        string
+		ArtistName      string
+		WorkDescription string
+	}
 	db := db.ConnectDB()
 
 	name := c.QueryParam("name")
-	var artists model.Artist
-	// db.Where
-	db.Joins("JOIN works w on w.work_id = artists.id").
-		Where("w.name =?", name).Find(&artists)
-	return c.JSON(http.StatusOK, artists)
+	// var artists model.Artist
+	var works model.Work
+	var results Result
+
+	// select w.name as work_name, a.name as artist_name, w.description from works w join artists a on w.artist_id = a.id;
+	db.Model(works).Select("works.name as work_name, works.description as work_description, artists.name as artist_name").Joins("left join artists on works.work_id = artists.id").Where("works.name=?", name).Scan(&results)
+	fmt.Println(results)
+	return c.JSON(http.StatusOK, results)
 }
 
 func UploadWork(c echo.Context) error {
@@ -38,8 +48,6 @@ func UploadWork(c echo.Context) error {
 	var thumb_tempFile *os.File
 	var filetype string
 	var tempFile *os.File
-	// Multipart form
-	// form := c.Request().MultipartForm.File["thumbnail_file"]
 	if err != nil {
 		log.Println(err.Error())
 		return err
@@ -49,16 +57,13 @@ func UploadWork(c echo.Context) error {
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Println(thumb_file)
 	thumb_filename := thumb_file.Filename
 	os.MkdirAll(thumb_dirname, 0777)
-	// thumb_filepath := fmt.Sprintf("%s/%s", thumb_dirname, thumb_filename)
 	thumb_fileTemp := fmt.Sprintf("%s", thumb_dirname)
 	thumb_text := strings.IndexByte(thumb_filename, '.')
 	thumb_extension := thumb_filename[thumb_text:]
 
 	fmt.Println(thumb_extension)
-	// files := form.File["thumbnail_file"]
 	for _, file := range files {
 		thumb_file, err := file.Open()
 		if err != nil {
@@ -107,8 +112,6 @@ func UploadWork(c echo.Context) error {
 	thumb_insertFile := model.File{ID: thumb_id, Filename: thumb_filename, Filesize: thumb_filesize, Filetype: thumb_filetype, Path: thumb_tempPath}
 	db.Create(&thumb_insertFile)
 
-	// Multipart form
-	// form := c.Request().MultipartForm.File["thumbnail_file"]
 	if err != nil {
 		log.Println(err.Error())
 		return err
@@ -118,10 +121,8 @@ func UploadWork(c echo.Context) error {
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Println(thumb_file)
-	filename := file.Filename
 
-	// thumb_filepath := fmt.Sprintf("%s/%s", thumb_dirname, thumb_filename)
+	filename := file.Filename
 
 	text := strings.IndexByte(filename, '.')
 	extension := filename[text:]
@@ -133,7 +134,7 @@ func UploadWork(c echo.Context) error {
 	}
 	fileTemp := fmt.Sprintf("%s", dirname)
 	fmt.Println(extension)
-	// files := form.File["thumbnail_file"]
+
 	for _, file2 := range upload_files {
 		file, err := file2.Open()
 		if err != nil {
@@ -159,12 +160,11 @@ func UploadWork(c echo.Context) error {
 		if err != nil {
 			panic(err)
 		}
-		// fmt.Println("this:", thumb_tempFile.Name())
 
 		if _, err = io.Copy(tempFile, file); err != nil {
 			return err
 		}
-		// fmt.Println(thumb_filepath)
+
 		defer tempFile.Close()
 
 		defer file.Close()
