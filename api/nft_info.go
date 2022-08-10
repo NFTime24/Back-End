@@ -33,7 +33,7 @@ func GetNFTInfoWithId(c echo.Context) error {
 		FilePath      string `json:"path"`
 		ThumbnailPath string `json:"thumbnail_path"`
 		ArtistName    string `json:"artist_name"`
-		ProfilePath   string `json:"profile_path"`
+		ProfilePath   string `json:"artist_profile_path"`
 		ArtistAddress string `json:"artist_address"`
 	}
 
