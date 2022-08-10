@@ -14,12 +14,13 @@ import (
 // @Description Get nft info
 // @Accept json
 // @Produce json
-// @Param owner_address query string true "NFT owner_address"
-// @Router /getNFTInfo [get]
+// @Param nft_id query string true "nft_id"
+// @Router /getNFTInfoWithId [get]
 func GetNFTInfoWithId(c echo.Context) error {
 	// nft_owner := c.QueryParam("owner_address")
 	nft_id_str := c.QueryParam("nft_id")
 	nft_id, _ := strconv.ParseUint(nft_id_str, 10, 64)
+
 	type Result struct {
 		NftId         int
 		WorkName      string

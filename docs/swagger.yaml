@@ -5,15 +5,30 @@ info:
   title: NFTime Sample Swagger API
   version: "1.0"
 paths:
-  /getNFTInfo:
+  /getNFTInfoWithId:
     get:
       consumes:
       - application/json
       description: Get nft info
       parameters:
-      - description: NFT owner_address
+      - description: nft_id
         in: query
-        name: example
+        name: nft_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: NFT
+  /works:
+    get:
+      consumes:
+      - application/json
+      description: Get works
+      parameters:
+      - description: name
+        in: query
+        name: name
         required: true
         type: string
       produces:

@@ -14,8 +14,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @Summary NFT
+// @Description Get works
+// @Accept json
+// @Produce json
+// @Param name query string true "name"
+// @Router /works [get]
 func GetWorks(c echo.Context) error {
-
+	name := c.QueryParam("name")
 	// 구조체 멤버변수 이름과 DB에서 가져오는 컬럼명이 일치해야함
 	type Result struct {
 		WorkName        string
@@ -24,7 +30,6 @@ func GetWorks(c echo.Context) error {
 	}
 	db := db.ConnectDB()
 
-	name := c.QueryParam("name")
 	// var artists model.Artist
 	var works model.Work
 	var results Result

@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/getNFTInfo": {
+        "/getNFTInfoWithId": {
             "get": {
                 "description": "Get nft info",
                 "consumes": [
@@ -29,8 +29,30 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "NFT owner_address",
-                        "name": "example",
+                        "description": "nft_id",
+                        "name": "nft_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/works": {
+            "get": {
+                "description": "Get works",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "NFT",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
                         "in": "query",
                         "required": true
                     }
