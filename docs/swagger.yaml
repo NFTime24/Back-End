@@ -22,7 +22,7 @@ paths:
       summary: Get specific NFT
       tags:
       - NFT
-  /works:
+  /work/specific:
     get:
       consumes:
       - application/json
@@ -37,6 +37,17 @@ paths:
       - application/json
       responses: {}
       summary: get specific work
+      tags:
+      - Work
+  /work/top10:
+    get:
+      consumes:
+      - application/json
+      description: get top 10 works
+      produces:
+      - application/json
+      responses: {}
+      summary: get top 10 works
       tags:
       - Work
 swagger: "2.0"

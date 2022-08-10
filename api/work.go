@@ -46,7 +46,7 @@ func GetSpecificWork(c echo.Context) error {
 // @Tags Work
 // @Accept json
 // @Produce json
-// @Router /works [get]
+// @Router /work/top10 [get]
 func GetTop10Works(c echo.Context) error {
 	// 구조체 멤버변수 이름과 DB에서 가져오는 컬럼명이 일치해야함
 	// filepath, workname, artistname

@@ -41,7 +41,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/works": {
+        "/work/specific": {
             "get": {
                 "description": "Get works",
                 "consumes": [
@@ -63,6 +63,22 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
+                "responses": {}
+            }
+        },
+        "/work/top10": {
+            "get": {
+                "description": "get top 10 works",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Work"
+                ],
+                "summary": "get top 10 works",
                 "responses": {}
             }
         }
