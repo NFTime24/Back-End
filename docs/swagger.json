@@ -5,7 +5,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "http://34.212.84.161",
+    "host": "34.212.84.161",
     "basePath": "/",
     "paths": {
         "/getNFTInfoWithId": {
