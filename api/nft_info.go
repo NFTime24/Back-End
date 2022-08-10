@@ -12,6 +12,7 @@ import (
 
 // @Summary NFT
 // @Description Get nft info
+// @Tags NFT
 // @Accept json
 // @Produce json
 // @Param nft_id query string true "nft_id"

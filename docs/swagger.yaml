@@ -20,6 +20,8 @@ paths:
       - application/json
       responses: {}
       summary: NFT
+      tags:
+      - NFT
   /works:
     get:
       consumes:

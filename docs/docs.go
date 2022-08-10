@@ -25,6 +25,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "NFT"
+                ],
                 "summary": "NFT",
                 "parameters": [
                     {
