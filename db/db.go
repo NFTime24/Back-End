@@ -34,22 +34,24 @@ func DbConn() (db *sql.DB) {
 	}
 	return db
 }
-func ConnectDB() *gorm.DB {
-	configuration := config.GetConfig()
-	// fmt.Println(configuration.DB_HOST)
-	connect_string := fmt.Sprintf(configuration.DB_USERNAME + ":" + configuration.DB_PASSWORD + "@tcp(" + configuration.DB_HOST + ")/" + configuration.DB_NAME)
-	sqlDB, err := sql.Open("mysql", connect_string)
-	db, err := gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{})
-	if err != nil {
-		panic("DB Connection Error")
-	}
-	return db
-}
+
+// func ConnectDB() *gorm.DB {
+// 	configuration := config.GetConfig()
+// 	// fmt.Println(configuration.DB_HOST)
+// 	connect_string := fmt.Sprintf(configuration.DB_USERNAME + ":" + configuration.DB_PASSWORD + "@tcp(" + configuration.DB_HOST + ")/" + configuration.DB_NAME)
+// 	sqlDB, err := sql.Open("mysql", connect_string)
+// 	db, err := gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{})
+// 	if err != nil {
+// 		panic("DB Connection Error")
+// 	}
+
+// 	return db
+// }
 func Init() {
 	configuration := config.GetConfig()
 	connect_string := fmt.Sprintf(configuration.DB_USERNAME + ":" + configuration.DB_PASSWORD + "@tcp(" + configuration.DB_HOST + ")/" + configuration.DB_NAME)
 	sqlDB, err := sql.Open("mysql", connect_string)
-	db, err := gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{})
+	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{})
 	if err != nil {
 		panic("DB Connection Error")
 	}
@@ -57,6 +59,5 @@ func Init() {
 }
 
 func DbManager() *gorm.DB {
-	db := ConnectDB()
 	return db
 }

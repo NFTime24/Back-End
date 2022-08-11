@@ -55,7 +55,7 @@ func GetTop10Works(c echo.Context) error {
 		ArtistName string
 		FilePath   string
 	}
-	db := db.ConnectDB()
+	db := db.DbManager()
 
 	// var artists model.Artist
 	var works model.Work
@@ -78,7 +78,7 @@ func GetTop10Works(c echo.Context) error {
 }
 
 func UploadWork(c echo.Context) error {
-	db := db.ConnectDB()
+	db := db.DbManager()
 	err := c.Request().ParseMultipartForm(512 >> 20)
 	if err != nil {
 		panic(err)

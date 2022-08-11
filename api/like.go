@@ -19,7 +19,7 @@ import (
 // @Param WorkId body string true "id of work"
 // @Router /like [post]
 func UpdateLike(c echo.Context) (err error) {
-	db := db.ConnectDB()
+	db := db.DbManager()
 	type Like struct {
 		UserId uint `json:"user_id"`
 		WorkId uint `json:"work_id"`

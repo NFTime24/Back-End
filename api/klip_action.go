@@ -27,7 +27,7 @@ func MintArt(c echo.Context) error {
 		fmt.Printf(err.Error())
 	}
 
-	db := db.ConnectDB()
+	db := db.DbManager()
 	var nfts model.Nft
 	var result1 uint64
 

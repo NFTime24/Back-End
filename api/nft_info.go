@@ -39,7 +39,7 @@ func GetNFTInfoWithId(c echo.Context) error {
 		ArtistAddress string `json:"artist_address"`
 	}
 
-	db := db.ConnectDB()
+	db := db.DbManager()
 	var users model.User
 	var results Result
 	db.Model(users).Select(`n.nft_id as nft_id,

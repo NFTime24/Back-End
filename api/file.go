@@ -9,7 +9,7 @@ import (
 )
 
 func GetFiles(c echo.Context) error {
-	db := db.ConnectDB()
+	db := db.DbManager()
 
 	files := []model.File{}
 	db.Find(&files)
