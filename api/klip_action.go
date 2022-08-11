@@ -5,14 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/rand"
 	"net/http"
 	"strconv"
 
+	"github.com/duke/db"
+	"github.com/duke/model"
 	"github.com/labstack/echo/v4"
 )
-
-var KlipRKeyMap map[uint64]string
 
 type KlipResponse struct {
 	RequestKey     string `json:"request_key"`
@@ -21,60 +20,48 @@ type KlipResponse struct {
 	RequestURL     string `json:"request_url"`
 }
 
-func PrepareAuth(c echo.Context) error {
-	reqBody := bytes.NewBufferString(`{
-			"bapp": { "name" : "NFTime"	}, 
-			"type": "execute_contract", 
-			"transaction": { 
-				"to": "0xFf1C1e55826DD95C44681BfCd88DCB32eE86B793", 
-				"value": "0", 
-				"abi": "{\"inputs\": [{\"internalType\": \"string\",\"name\": \"artist_address\",\"type\": \"string\"}],\"name\": \"mintArt\",\"outputs\": [{\"internalType\": \"uint256\",\"name\": \"\",\"type\": \"uint256\"}],\"stateMutability\": \"nonpayable\",\"type\": \"function\"}", 
-				"params": "[\"0xF39E4961C046BA913f835c08Bf25De348184F3a8\"]"
-			} 
-		}`)
-	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	var jData KlipResponse
-	fmt.Printf("body: %s \n", body)
-	json.Unmarshal(body, &jData)
-	// t, err := template.ParseGlob("./templates/qr.html")
-	// if err != nil {
-	// 	fmt.Printf(err.Error())
-	// }
-	fmt.Printf("requestkey: %s \n", jData.RequestKey)
-	jData.RequestURL = "intent://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
-	jData.RequestURL += jData.RequestKey
-	jData.RequestURL += "#Intent;scheme=kakaotalk;package=com.kakao.talk;end"
-	fmt.Printf(jData.RequestURL)
-
-	// http.Redirect(w, r, jData.RequestQR, http.StatusFound)
-	c.Redirect(http.StatusFound, jData.RequestURL)
-	return nil
-	//t.Execute(w, jData)
-}
-
 func MintArt(c echo.Context) error {
-	randUint := rand.Uint64()
-	fmt.Printf("%d", randUint)
+	work_id_str := c.QueryParam("work_id")
+	work_id, err := strconv.ParseUint(work_id_str, 10, 64)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	db := db.ConnectDB()
+	var nfts model.Nft
+	var result1 uint64
+
+	db.Model(nfts).Select(`MAX(nft_id)`).Scan(&result1)
+
+	var works model.Work
+	var result2 string
+
+	db.Model(works).Select(`a.address`).
+		Joins("left join test.artists as a on a.id = works.artist_id").
+		Where("works.work_id=?", work_id).
+		Scan(&result2)
+
+	newItemId := result1 + 1
+	artist_address := result2
+
+	fmt.Printf("\n newItemId: %d, artist_address: %s \n", newItemId, artist_address)
+
+	db.Create(model.Nft{
+		NftID:   int(newItemId),
+		WorksID: uint(work_id),
+		OwnerID: 0,
+	})
 
 	reqBodyStr := fmt.Sprintf(`{
-		"bapp": { "name" : "NFTime", 
-				"callback": { "success": "http://34.212.84.161/getKlipResult?keyStr=%d", "fail": "" } }, 
+		"bapp": { "name" : "NFTime" }, 
 		"type": "execute_contract", 
 		"transaction": { 
-			"to": "0xFf1C1e55826DD95C44681BfCd88DCB32eE86B793", 
+			"to": "0xf1cB5DDF7E8E9Af429b79473c41Dd85750Faa7af", 
 			"value": "0", 
-			"abi": "{\"inputs\": [{\"internalType\": \"string\",\"name\": \"artist_address\",\"type\": \"string\"}],\"name\": \"mintArt\",\"outputs\": [{\"internalType\": \"uint256\",\"name\": \"\",\"type\": \"uint256\"}],\"stateMutability\": \"nonpayable\",\"type\": \"function\"}", 
-			"params": "[\"0xF39E4961C046BA913f835c08Bf25De348184F3a8\"]"
+			"abi": "{ \"inputs\": [ { \"internalType\": \"uint256\", \"name\": \"newItemId\", \"type\": \"uint256\" }, { \"internalType\": \"string\", \"name\": \"artist_address\", \"type\": \"string\" } ], \"name\": \"mintArt\", \"outputs\": [ { \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" } ], \"stateMutability\": \"nonpayable\", \"type\": \"function\" }", 
+			"params": "[%d, \"%s\"]"
 		} 
-	}`, randUint)
+	}`, newItemId, artist_address)
 
 	reqBody := bytes.NewBufferString(reqBodyStr)
 	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
@@ -94,7 +81,6 @@ func MintArt(c echo.Context) error {
 	// 	fmt.Printf(err.Error())
 	// }
 	fmt.Printf("requestkey: %s \n", jData.RequestKey)
-	KlipRKeyMap[randUint] = jData.RequestKey
 	jData.RequestURL = "intent://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
 	jData.RequestURL += jData.RequestKey
 	jData.RequestURL += "#Intent;scheme=kakaotalk;package=com.kakao.talk;end"
@@ -104,29 +90,4 @@ func MintArt(c echo.Context) error {
 	c.Redirect(http.StatusFound, jData.RequestURL)
 	return nil
 	//t.Execute(w, jData)
-}
-
-func GetKlipResult(c echo.Context) error {
-	keyStr := c.QueryParam("keyStr")
-	key, err := strconv.ParseUint(string(keyStr), 10, 64)
-	if err != nil {
-		return c.String(http.StatusForbidden, "key errored")
-	}
-	reqKey := KlipRKeyMap[key]
-
-	httpStr := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", reqKey)
-	resp, err := http.Get(httpStr)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-
-	str := fmt.Sprintf("%s", body)
-	fmt.Printf("%s\n", body)
-	fmt.Printf("%s\n", string(body))
-	return c.String(http.StatusOK, str)
 }
