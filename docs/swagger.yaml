@@ -22,6 +22,30 @@ paths:
       summary: Get specific NFT
       tags:
       - NFT
+  /like:
+    post:
+      consumes:
+      - application/json
+      description: update like
+      parameters:
+      - description: id of user
+        in: body
+        name: UserId
+        required: true
+        schema:
+          type: string
+      - description: id of work
+        in: body
+        name: WorkId
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: update like
+      tags:
+      - Like
   /work/specific:
     get:
       consumes:

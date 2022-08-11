@@ -41,6 +41,42 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/like": {
+            "post": {
+                "description": "update like",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "update like",
+                "parameters": [
+                    {
+                        "description": "id of user",
+                        "name": "UserId",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "id of work",
+                        "name": "WorkId",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/work/specific": {
             "get": {
                 "description": "Get works",
