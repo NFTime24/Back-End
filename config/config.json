@@ -1,7 +1,7 @@
 {
   "DB_USERNAME": "root",
-  "DB_PASSWORD": "111111",
+  "DB_PASSWORD": "dukecoon!",
   "DB_PORT": "3306",
-  "DB_HOST": "localhost",
+  "DB_HOST": "database-1.cng84nshh1hx.us-west-2.rds.amazonaws.com",
   "DB_NAME": "test"
 }
