@@ -14,8 +14,8 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
 var err error
+var db *gorm.DB
 
 func DbConn() (db *sql.DB) {
 
@@ -54,5 +54,9 @@ func Init() {
 		panic("DB Connection Error")
 	}
 	db.AutoMigrate(&model.Artist{}, &model.File{}, &model.User{}, &model.Work{}, &model.Nft{}, &model.Like{})
+}
 
+func DbManager() *gorm.DB {
+	db := ConnectDB()
+	return db
 }

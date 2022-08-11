@@ -32,6 +32,7 @@ func UpdateLike(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
+	fmt.Println(like.UserId)
 	var likes model.Like
 	like_index := -1
 	type This []struct {

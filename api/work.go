@@ -29,7 +29,7 @@ func GetSpecificWork(c echo.Context) error {
 		ArtistName      string
 		WorkDescription string
 	}
-	db := db.ConnectDB()
+	db := db.DbManager()
 
 	// var artists model.Artist
 	var works model.Work
