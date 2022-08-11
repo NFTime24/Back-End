@@ -45,3 +45,11 @@ type Nft struct {
 	User    User `gorm:"foreignkey:OwnerID"`
 	OwnerID uint
 }
+
+type Like struct {
+	LikeID  uint `gorm:"primarykey"`
+	User    User `gorm:"foreignkey:OwnerID"`
+	OwnerID uint
+	Work    Work `gorm:"foreignkey:WorksID"`
+	WorksID uint
+}

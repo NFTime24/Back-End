@@ -18,6 +18,7 @@ import (
 // @Param nft_id query string true "nft_id"
 // @Router /getNFTInfoWithId [get]
 func GetNFTInfoWithId(c echo.Context) error {
+
 	// nft_owner := c.QueryParam("owner_address")
 	nft_id_str := c.QueryParam("nft_id")
 	nft_id, _ := strconv.ParseUint(nft_id_str, 10, 64)
