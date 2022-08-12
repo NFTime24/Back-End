@@ -210,7 +210,6 @@ func UploadWork(c echo.Context) error {
 		}
 
 		defer tempFile.Close()
-
 		defer file.Close()
 
 	}

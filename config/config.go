@@ -1,6 +1,8 @@
 package config
 
 import (
+	"os"
+
 	"github.com/tkanos/gonfig"
 )
 
@@ -14,7 +16,11 @@ type Configuration struct {
 
 func GetConfig() Configuration {
 	configuration := Configuration{}
-	gonfig.GetConf("config/config.json", &configuration)
+	if os.Getenv("APP_ENV") == "localhost" {
+		gonfig.GetConf("config/config_local.json", &configuration)
+	} else {
+		gonfig.GetConf("config/config.json", &configuration)
+	}
 	return configuration
 }
 
