@@ -78,6 +78,7 @@ func GetTop10Works(c echo.Context) error {
 }
 
 func UploadWork(c echo.Context) error {
+
 	db := db.DbManager()
 	err := c.Request().ParseMultipartForm(512 >> 20)
 	if err != nil {

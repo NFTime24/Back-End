@@ -64,5 +64,4 @@ func UpdateLike(c echo.Context) (err error) {
 		db.Where("like_id =?", like_index).Delete(&like)
 		return c.String(http.StatusOK, "Successfully deleted")
 	}
-
 }

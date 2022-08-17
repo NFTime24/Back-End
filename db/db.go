@@ -42,7 +42,7 @@ func Init() {
 	if err != nil {
 		panic("DB Connection Error")
 	}
-	db.AutoMigrate(&model.Artist{}, &model.File{}, &model.User{}, &model.Work{}, &model.Nft{}, &model.Like{})
+	db.AutoMigrate(&model.Artist{}, &model.File{}, &model.User{}, &model.Work{}, &model.Nft{}, &model.Like{}, &model.Exibition{})
 }
 
 func DbManager() *gorm.DB {

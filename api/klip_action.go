@@ -47,7 +47,7 @@ func MintArt(c echo.Context) error {
 	fmt.Printf("\n newItemId: %d, artist_address: %s \n", newItemId, artist_address)
 
 	db.Create(model.Nft{
-		NftID:   int(newItemId),
+		NftID:   uint(newItemId),
 		WorksID: uint(work_id),
 		OwnerID: 0,
 	})
