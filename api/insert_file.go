@@ -201,6 +201,9 @@ func UploadWork(c echo.Context) error {
 		case ".jpeg":
 			tempFile, err = ioutil.TempFile(fileTemp, "upload-*.jpeg")
 			filetype = "image/jpeg"
+		case ".gif":
+			tempFile, err = ioutil.TempFile(fileTemp, "upload-*.gif")
+			filetype = "image/gif"
 		case ".mp4":
 			tempFile, err = ioutil.TempFile(fileTemp, "upload-*.mp4")
 			filetype = "video/mp4"
