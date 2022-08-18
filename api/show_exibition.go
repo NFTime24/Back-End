@@ -19,15 +19,15 @@ import (
 func ShowAllExibitions(c echo.Context) error {
 
 	type Result struct {
-		ExibitonId          int    `json:"exibition_id"`
-		ExibitionName       string `json:"exibition_name"`
-		ExibitonDescription string `json:"exibition_description"`
-		StartDate           string `json:"start_date"`
-		EndDate             string `json:"end_date"`
-		Filename            string `json:"filename"`
-		FileSize            int    `json:"filesize"`
-		FileType            string `json:"filetype"`
-		FilePath            string `json:"path"`
+		ExibitonId           int    `json:"exibition_id"`
+		ExibitionName        string `json:"exibition_name"`
+		ExibitionDescription string `json:"exibition_description"`
+		StartDate            string `json:"start_date"`
+		EndDate              string `json:"end_date"`
+		Filename             string `json:"filename"`
+		FileSize             int    `json:"filesize"`
+		FileType             string `json:"filetype"`
+		FilePath             string `json:"path"`
 	}
 
 	db := db.DbManager()
