@@ -33,7 +33,7 @@ func ShowAllExibitions(c echo.Context) error {
 	db := db.DbManager()
 	var exibitions model.Exibition
 	var results Result
-	db.Model(exibitions).Select(`exibitions.id as exibiton_id, exibitions.name as exibition_name, exibitions.description as exibition_description, 
+	db.Model(exibitions).Select(`exibitions.exibition_id as exibiton_id, exibitions.name as exibition_name, exibitions.description as exibition_description, 
     exibitions.start_date as start_date, exibitions.end_date as end_date, f.filename,
     f.filename as file_name, f.filesize as file_size, 
 	f.filetype as file_type, f.path as file_path`).
