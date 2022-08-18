@@ -5,6 +5,17 @@ info:
   title: NFTime Sample Swagger API
   version: "1.0"
 paths:
+  /exibition:
+    get:
+      consumes:
+      - application/json
+      description: Get nft info
+      produces:
+      - application/json
+      responses: {}
+      summary: Get specific NFT
+      tags:
+      - exibition
   /getNFTInfoWithId:
     get:
       consumes:

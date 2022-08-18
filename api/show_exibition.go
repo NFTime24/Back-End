@@ -11,11 +11,10 @@ import (
 
 // @Summary Get specific NFT
 // @Description Get nft info
-// @Tags NFT
+// @Tags exibition
 // @Accept json
 // @Produce json
-// @Param nft_id query string true "nft_id"
-// @Router /getNFTInfoWithId [get]
+// @Router /exibition [get]
 func ShowAllExibitions(c echo.Context) error {
 
 	type Result struct {

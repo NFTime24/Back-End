@@ -16,6 +16,22 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/exibition": {
+            "get": {
+                "description": "Get nft info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "exibition"
+                ],
+                "summary": "Get specific NFT",
+                "responses": {}
+            }
+        },
         "/getNFTInfoWithId": {
             "get": {
                 "description": "Get nft info",

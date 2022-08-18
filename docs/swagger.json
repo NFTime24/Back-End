@@ -8,6 +8,22 @@
     "host": "34.212.84.161",
     "basePath": "/",
     "paths": {
+        "/exibition": {
+            "get": {
+                "description": "Get nft info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "exibition"
+                ],
+                "summary": "Get specific NFT",
+                "responses": {}
+            }
+        },
         "/getNFTInfoWithId": {
             "get": {
                 "description": "Get nft info",
