@@ -5,7 +5,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "34.212.84.161",
+    "host": "localhost",
     "basePath": "/",
     "paths": {
         "/exibition": {
@@ -80,6 +80,13 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "type": "file",
+                        "description": "test",
+                        "name": "test",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}

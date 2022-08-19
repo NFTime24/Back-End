@@ -27,6 +27,7 @@ func ShowAllExibitions(c echo.Context) error {
 		FileSize             int    `json:"filesize"`
 		FileType             string `json:"filetype"`
 		FilePath             string `json:"path"`
+		IsOwned              bool   `json:"is_owned"`
 	}
 
 	db := db.DbManager()
@@ -43,8 +44,8 @@ func ShowAllExibitions(c echo.Context) error {
 	}
 	for rows.Next() {
 		db.ScanRows(rows, &results)
+		fmt.Println(results[1])
 	}
 
-	fmt.Println(results)
 	return c.JSON(http.StatusOK, results)
 }

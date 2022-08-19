@@ -1,5 +1,5 @@
 basePath: /
-host: 34.212.84.161
+host: localhost
 info:
   contact: {}
   title: NFTime Sample Swagger API
@@ -51,6 +51,11 @@ paths:
         required: true
         schema:
           type: string
+      - description: test
+        in: formData
+        name: test
+        required: true
+        type: file
       produces:
       - application/json
       responses: {}

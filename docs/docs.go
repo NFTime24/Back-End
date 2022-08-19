@@ -88,6 +88,13 @@ const docTemplate = `{
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "type": "file",
+                        "description": "test",
+                        "name": "test",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -140,7 +147,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "34.212.84.161",
+	Host:             "localhost",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "NFTime Sample Swagger API",

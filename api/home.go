@@ -7,5 +7,5 @@ import (
 )
 
 func Home(c echo.Context) error {
-	return c.String(http.StatusOK, "Welcome to NFT")
+	return c.String(http.StatusOK, "Welcome to NFTime")
 }

@@ -13,17 +13,6 @@ import (
 func PostExibition(c echo.Context) error {
 	db := db.DbManager()
 
-	// type Exibition struct {
-	// 	ExibitionID uint `gorm:"primarykey"`
-	// 	Name        string
-	// 	Description string
-	// 	StartDate   time.Time
-	// 	EndDate     time.Time
-	// 	File        File `gorm:"foreignkey:FileID"`
-	// 	FileID      uint
-	// 	Link        string
-	// }
-
 	params := make(map[string]string)
 	test := c.Bind(&params)
 	fmt.Println(test)

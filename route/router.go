@@ -26,7 +26,7 @@ func Init() *echo.Echo {
 	// e.GET("/getNFTInfo", api.GetNFTInfo)
 	// e.GET("/test", api.GetTest)
 	// e.GET("/test2", api.TestGo)
-	e.GET("/file-upload", api.UploadWork)
+	e.POST("/file-upload", api.UploadWork)
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
