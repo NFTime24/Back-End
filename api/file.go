@@ -14,6 +14,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param upload_file formData file true "file you want to upload"
+// @Param thumbnail_file formData file false "thumbnail file"
 // @Router /file-upload [post]
 func GetFiles(c echo.Context) error {
 	db := db.DbManager()
