@@ -16,6 +16,27 @@ paths:
       summary: Get specific NFT
       tags:
       - exibition
+  /file-upload:
+    post:
+      consumes:
+      - application/json
+      description: upload file and thumbnail
+      parameters:
+      - description: file you want to upload
+        in: formData
+        name: upload_file
+        required: true
+        type: file
+      - description: thumbnail file
+        in: formData
+        name: thumbnail_file
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      summary: upload file
+      tags:
+      - File
   /getNFTInfoWithId:
     get:
       consumes:

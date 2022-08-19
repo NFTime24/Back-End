@@ -24,6 +24,37 @@
                 "responses": {}
             }
         },
+        "/file-upload": {
+            "post": {
+                "description": "upload file and thumbnail",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "upload file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file you want to upload",
+                        "name": "upload_file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "thumbnail file",
+                        "name": "thumbnail_file",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/getNFTInfoWithId": {
             "get": {
                 "description": "Get nft info",
