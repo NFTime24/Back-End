@@ -27,6 +27,8 @@ func MintArt(c echo.Context) error {
 		fmt.Printf(err.Error())
 	}
 
+	osType := c.QueryParam("os_type") // "ios" or "aos"
+
 	db := db.DbManager()
 	var nfts model.Nft
 	var result1 uint64
@@ -47,9 +49,10 @@ func MintArt(c echo.Context) error {
 	fmt.Printf("\n newItemId: %d, artist_address: %s \n", newItemId, artist_address)
 
 	db.Create(model.Nft{
-		NftID:   uint(newItemId),
-		WorksID: uint(work_id),
-		OwnerID: 0,
+		NftID:        uint(newItemId),
+		WorksID:      uint(work_id),
+		OwnerID:      0,
+		ExibitionsID: 1,
 	})
 
 	reqBodyStr := fmt.Sprintf(`{
@@ -81,9 +84,15 @@ func MintArt(c echo.Context) error {
 	// 	fmt.Printf(err.Error())
 	// }
 	fmt.Printf("requestkey: %s \n", jData.RequestKey)
-	jData.RequestURL = "intent://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
-	jData.RequestURL += jData.RequestKey
-	jData.RequestURL += "#Intent;scheme=kakaotalk;package=com.kakao.talk;end"
+	if osType == "ios" {
+		jData.RequestURL = "kakaotalk://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
+		jData.RequestURL += jData.RequestKey
+	} else {
+		jData.RequestURL = "intent://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
+		jData.RequestURL += jData.RequestKey
+		jData.RequestURL += "#Intent;scheme=kakaotalk;package=com.kakao.talk;end"
+	}
+
 	fmt.Printf(jData.RequestURL)
 
 	// http.Redirect(w, r, jData.RequestQR, http.StatusFound)
