@@ -19,6 +19,7 @@ func Init() *echo.Echo {
 	e.GET("/mintArt", api.MintArt)
 	e.GET("/getNFTInfoWithId", api.GetNFTInfoWithId)
 	e.GET("/getWorkIdWithNftId", api.GetWorkIdWithNftId)
+	e.GET("/getWorkInfoWithId", api.GetWorkInfoWithId)
 	e.POST("/like", api.UpdateLike)
 	e.GET("/exibition", api.ShowAllExibitions)
 	e.POST("/exibition", api.PostExibition)
