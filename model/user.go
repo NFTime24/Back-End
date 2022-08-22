@@ -36,6 +36,9 @@ type Work struct {
 	FileID      uint
 	Artist      Artist `gorm:"foreignkey:ArtistID"`
 	ArtistID    uint
+
+	Exibition    Exibition `gorm:"foreignkey:ExibitionsID"`
+	ExibitionsID uint
 }
 type Exibition struct {
 	ExibitionID uint `gorm:"primarykey"`
@@ -50,13 +53,11 @@ type Exibition struct {
 	Link        string
 }
 type Nft struct {
-	NftID        uint      `gorm:"primarykey"`
-	Exibition    Exibition `gorm:"foreignkey:ExibitionsID"`
-	ExibitionsID uint
-	Work         Work `gorm:"foreignkey:WorksID"`
-	WorksID      uint
-	User         User `gorm:"foreignkey:OwnerID"`
-	OwnerID      uint
+	NftID   uint `gorm:"primarykey"`
+	Work    Work `gorm:"foreignkey:WorksID"`
+	WorksID uint
+	User    User `gorm:"foreignkey:OwnerID"`
+	OwnerID uint
 }
 
 type Like struct {

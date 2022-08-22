@@ -51,7 +51,7 @@ func GetWorksInfoInExibition(c echo.Context) error {
 	var results []Result
 	var results_user []Result
 
-	rows_user, err := db.Model(users).Select(`n.nft_id as nft_id, n.exibitions_id as exibition_id,
+	rows_user, err := db.Model(users).Select(`n.nft_id as nft_id, w.exibitions_id as exibition_id,
     w.name as work_name, w.price as price, w.description as description,
     w.category as work_category,f.filename as file_name, f.filesize as file_size,
     f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path,
@@ -62,8 +62,8 @@ func GetWorksInfoInExibition(c echo.Context) error {
 		Joins("left join files as t on f.thumbnail_id = t.id").
 		Joins("left join artists as a on w.artist_id = a.id").
 		Joins("left join files as p on a.profile_id = p.id").
-		Joins("left join exibitions as e on e.exibition_id = n.exibitions_id").
-		Where("n.exibitions_id=? and users.id=?", ex_id, user_id).Rows()
+		Joins("left join exibitions as e on e.exibition_id = w.exibitions_id").
+		Where("w.exibitions_id=? and users.id=?", ex_id, user_id).Rows()
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ func GetWorksInfoInExibition(c echo.Context) error {
 	}
 
 	fmt.Println(results_user)
-	rows, err := db.Model(users).Select(`n.nft_id as nft_id, n.exibitions_id as exibition_id,
+	rows, err := db.Model(users).Select(`n.nft_id as nft_id, w.exibitions_id as exibition_id,
 	 w.name as work_name, w.price as price, w.description as description, 
 	 w.category as work_category,f.filename as file_name, f.filesize as file_size, 
 	 f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path, 
@@ -83,8 +83,8 @@ func GetWorksInfoInExibition(c echo.Context) error {
 		Joins("left join files as t on f.thumbnail_id = t.id").
 		Joins("left join artists as a on w.artist_id = a.id").
 		Joins("left join files as p on a.profile_id = p.id").
-		Joins("left join exibitions as e on e.exibition_id = n.exibitions_id").
-		Where("n.exibitions_id=?", ex_id).Rows()
+		Joins("left join exibitions as e on e.exibition_id = w.exibitions_id").
+		Where("w.exibitions_id=?", ex_id).Rows()
 	if err != nil {
 		panic(err)
 	}
