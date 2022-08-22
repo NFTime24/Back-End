@@ -58,3 +58,18 @@ func GetNFTInfoWithId(c echo.Context) error {
 	fmt.Println(results)
 	return c.JSON(http.StatusOK, results)
 }
+
+func GetWorkIdWithNftId(c echo.Context) error {
+	nft_id_str := c.QueryParam("nft_id")
+	nft_id, _ := strconv.ParseUint(nft_id_str, 10, 64)
+
+	db := db.DbManager()
+	var nfts model.Nft
+	var result int
+	db.Model(nfts).Select(`works_id`).
+		Where("nft_id=?", nft_id).Scan(&result)
+
+	resultStr := strconv.Itoa(result)
+	fmt.Println(resultStr)
+	return c.String(http.StatusOK, resultStr)
+}
