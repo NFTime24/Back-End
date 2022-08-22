@@ -88,6 +88,38 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/getWorksInfo": {
+            "get": {
+                "description": "Get nft info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get specific NFT",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ex_id",
+                        "name": "ex_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user_id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/like": {
             "post": {
                 "description": "update like",

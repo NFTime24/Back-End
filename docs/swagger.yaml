@@ -54,6 +54,28 @@ paths:
       summary: Get specific NFT
       tags:
       - NFT
+  /getWorksInfo:
+    get:
+      consumes:
+      - application/json
+      description: Get nft info
+      parameters:
+      - description: ex_id
+        in: query
+        name: ex_id
+        required: true
+        type: string
+      - description: user_id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get specific NFT
+      tags:
+      - NFT
   /like:
     post:
       consumes:
