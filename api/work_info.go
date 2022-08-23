@@ -257,7 +257,7 @@ func GetTop10Works(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param ex_id query string true "ex_id"
-// @Router /getWorksInExibition [get]
+// @Router /getWorksInExhibition [get]
 func GetWorksInExhibition(c echo.Context) error {
 
 	// nft_owner := c.QueryParam("owner_address")

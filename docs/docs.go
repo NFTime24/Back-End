@@ -154,7 +154,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/getWorksInExibition": {
+        "/getWorksInExhibition": {
             "get": {
                 "description": "Get work info in Exibition",
                 "consumes": [

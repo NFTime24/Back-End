@@ -144,7 +144,7 @@ paths:
       summary: Get specific NFT
       tags:
       - NFT
-  /getWorksInExibition:
+  /getWorksInExhibition:
     get:
       consumes:
       - application/json
