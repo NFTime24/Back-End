@@ -9,6 +9,21 @@ type ExibitionCreateParam struct {
 	link        string `json:"link" example: "https://tickets.interpark.com/goods/22003677?app_tapbar_state=hide&"`
 }
 type LikeCreateParam struct {
-	UserId int `json:"user_id" example: "1"`
-	WorkId int `json:"work_id" example: "1"`
+	UserId string `json:"user_id" example: "1"`
+	WorkId string `json:"work_id" example: "1"`
+}
+
+type ArtistCreateParam struct {
+	ArtistName      string `json:"artist_name" example: "Claude Monet"`
+	ArtistAddress   string `json:"artist_address" example: "0x436c61756465204d6f6e6574"`
+	ArtistProfileId string `json:"artist_profile_id" example: "41"`
+}
+
+type WorkInfoCreateParam struct {
+	WorkName        string `json:"work_name" example: "monet the rising sun"`
+	WorkPrice       string `json:"work_price" example: "20000"`
+	WorkDescription string `json:"work_description" example: "moving sun"`
+	WorkCategory    string `json:"work_category" example: "Image/GIF"`
+	FileId          string `json:"file_id" example: "42"`
+	ArtistId        string `json:"artist_id" example: "41"`
 }

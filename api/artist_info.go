@@ -10,6 +10,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @Summary update artist
+// @Description update artist
+// @Tags Artist
+// @Accept json
+// @Produce json
+// @Param like body model.ArtistCreateParam true "artist data"
+// @Router /artist [post]
 func PostArtist(c echo.Context) error {
 	db := db.DbManager()
 	params := make(map[string]string)

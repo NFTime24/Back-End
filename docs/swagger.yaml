@@ -1,5 +1,14 @@
 basePath: /
 definitions:
+  model.ArtistCreateParam:
+    properties:
+      artist_address:
+        type: string
+      artist_name:
+        type: string
+      artist_profile_id:
+        type: string
+    type: object
   model.ExibitionCreateParam:
     properties:
       description:
@@ -16,9 +25,24 @@ definitions:
   model.LikeCreateParam:
     properties:
       user_id:
-        type: integer
+        type: string
       work_id:
-        type: integer
+        type: string
+    type: object
+  model.WorkInfoCreateParam:
+    properties:
+      artist_id:
+        type: string
+      file_id:
+        type: string
+      work_category:
+        type: string
+      work_description:
+        type: string
+      work_name:
+        type: string
+      work_price:
+        type: string
     type: object
 host: 34.212.84.161
 info:
@@ -26,6 +50,24 @@ info:
   title: NFTime Sample Swagger API
   version: "1.0"
 paths:
+  /artist:
+    post:
+      consumes:
+      - application/json
+      description: update artist
+      parameters:
+      - description: artist data
+        in: body
+        name: like
+        required: true
+        schema:
+          $ref: '#/definitions/model.ArtistCreateParam'
+      produces:
+      - application/json
+      responses: {}
+      summary: update artist
+      tags:
+      - Artist
   /exibition:
     get:
       consumes:
@@ -158,6 +200,24 @@ paths:
       - application/json
       responses: {}
       summary: get top 10 works
+      tags:
+      - Work
+  /workInfo:
+    post:
+      consumes:
+      - application/json
+      description: update work
+      parameters:
+      - description: work info data
+        in: body
+        name: like
+        required: true
+        schema:
+          $ref: '#/definitions/model.WorkInfoCreateParam'
+      produces:
+      - application/json
+      responses: {}
+      summary: update work
       tags:
       - Work
 swagger: "2.0"

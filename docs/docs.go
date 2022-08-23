@@ -16,6 +16,33 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/artist": {
+            "post": {
+                "description": "update artist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "update artist",
+                "parameters": [
+                    {
+                        "description": "artist data",
+                        "name": "like",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ArtistCreateParam"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/exibition": {
             "get": {
                 "description": "Get nft info",
@@ -212,9 +239,50 @@ const docTemplate = `{
                 "summary": "get top 10 works",
                 "responses": {}
             }
+        },
+        "/workInfo": {
+            "post": {
+                "description": "update work",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Work"
+                ],
+                "summary": "update work",
+                "parameters": [
+                    {
+                        "description": "work info data",
+                        "name": "like",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.WorkInfoCreateParam"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
+        "model.ArtistCreateParam": {
+            "type": "object",
+            "properties": {
+                "artist_address": {
+                    "type": "string"
+                },
+                "artist_name": {
+                    "type": "string"
+                },
+                "artist_profile_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ExibitionCreateParam": {
             "type": "object",
             "properties": {
@@ -239,10 +307,33 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "user_id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "work_id": {
-                    "type": "integer"
+                    "type": "string"
+                }
+            }
+        },
+        "model.WorkInfoCreateParam": {
+            "type": "object",
+            "properties": {
+                "artist_id": {
+                    "type": "string"
+                },
+                "file_id": {
+                    "type": "string"
+                },
+                "work_category": {
+                    "type": "string"
+                },
+                "work_description": {
+                    "type": "string"
+                },
+                "work_name": {
+                    "type": "string"
+                },
+                "work_price": {
+                    "type": "string"
                 }
             }
         }
