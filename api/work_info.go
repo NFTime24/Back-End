@@ -289,7 +289,7 @@ func GetWorksInExhibition(c echo.Context) error {
 	 w.name as work_name, w.price as price, w.description as description, 
 	 w.category as work_category,f.filename as file_name, f.filesize as file_size, 
 	 f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path, 
-	 a.address as artist_address, users.id as user_id`).
+	 a.address as artist_address`).
 		Table("works as w").
 		Joins("left join files as f on w.file_id = f.id").
 		Joins("left join files as t on f.thumbnail_id = t.id").
