@@ -53,7 +53,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "exibition"
+                    "Exibition"
                 ],
                 "summary": "Get specific NFT",
                 "responses": {}
@@ -79,37 +79,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/model.ExibitionCreateParam"
                         }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/file-upload": {
-            "post": {
-                "description": "upload file and thumbnail",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "File"
-                ],
-                "summary": "upload file",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "file you want to upload",
-                        "name": "upload_file",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "thumbnail file",
-                        "name": "thumbnail_file",
-                        "in": "formData"
                     }
                 ],
                 "responses": {}
