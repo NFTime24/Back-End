@@ -154,6 +154,31 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/getWorksInExibition": {
+            "get": {
+                "description": "Get work info in Exibition",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get specific Work",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ex_id",
+                        "name": "ex_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/getWorksInfo": {
             "get": {
                 "description": "Get nft info",
