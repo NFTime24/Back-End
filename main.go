@@ -11,7 +11,7 @@ import (
 
 // @title NFTime Sample Swagger API
 // @version 1.0
-// @host localhost
+// @host 34.212.84.161
 // @BasePath /
 func main() {
 	db.Init()
