@@ -61,7 +61,7 @@ func PostWork(c echo.Context) error {
 // @Param ex_id query string true "ex_id"
 // @Param user_id query string true "user_id"
 // @Router /getWorksInfo [get]
-func GetWorksInfoInExibition(c echo.Context) error {
+func GetWorksInfoInExhibition(c echo.Context) error {
 
 	// nft_owner := c.QueryParam("owner_address")
 	ex_id_str := c.QueryParam("ex_id")
@@ -85,7 +85,7 @@ func GetWorksInfoInExibition(c echo.Context) error {
 		ProfilePath   string `json:"artist_profile_path"`
 		ArtistAddress string `json:"artist_address"`
 		UserId        uint   `json:"user_id"`
-		ExibitionId   uint   `json:"exibition_id"`
+		ExhibitionId  uint   `json:"exhibition_id"`
 		IsOwned       bool   `json:"is_owned"`
 	}
 
@@ -94,7 +94,7 @@ func GetWorksInfoInExibition(c echo.Context) error {
 	var results []Result
 	var results_user []Result
 
-	rows_user, err := db.Model(users).Select(`n.nft_id as nft_id, w.exibitions_id as exibition_id,
+	rows_user, err := db.Model(users).Select(`n.nft_id as nft_id, w.exhibitions_id as exhibition_id,
     w.name as work_name, w.price as price, w.description as description,
     w.category as work_category,f.filename as file_name, f.filesize as file_size,
     f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path,
@@ -105,8 +105,8 @@ func GetWorksInfoInExibition(c echo.Context) error {
 		Joins("left join files as t on f.thumbnail_id = t.id").
 		Joins("left join artists as a on w.artist_id = a.id").
 		Joins("left join files as p on a.profile_id = p.id").
-		Joins("left join exibitions as e on e.exibition_id = w.exibitions_id").
-		Where("w.exibitions_id=? and users.id=?", ex_id, user_id).Rows()
+		Joins("left join exhibitions as e on e.exhibition_id = w.exhibitions_id").
+		Where("w.exhibitions_id=? and users.id=?", ex_id, user_id).Rows()
 	if err != nil {
 		panic(err)
 	}
@@ -115,7 +115,7 @@ func GetWorksInfoInExibition(c echo.Context) error {
 	}
 
 	fmt.Println(results_user)
-	rows, err := db.Model(users).Select(`n.nft_id as nft_id, w.exibitions_id as exibition_id,
+	rows, err := db.Model(users).Select(`n.nft_id as nft_id, w.exhibitions_id as exhibition_id,
 	 w.name as work_name, w.price as price, w.description as description, 
 	 w.category as work_category,f.filename as file_name, f.filesize as file_size, 
 	 f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path, 
@@ -126,8 +126,8 @@ func GetWorksInfoInExibition(c echo.Context) error {
 		Joins("left join files as t on f.thumbnail_id = t.id").
 		Joins("left join artists as a on w.artist_id = a.id").
 		Joins("left join files as p on a.profile_id = p.id").
-		Joins("left join exibitions as e on e.exibition_id = w.exibitions_id").
-		Where("w.exibitions_id=?", ex_id).Rows()
+		Joins("left join exhibitions as e on e.exhibition_id = w.exhibitions_id").
+		Where("w.exhibitions_id=?", ex_id).Rows()
 	if err != nil {
 		panic(err)
 	}

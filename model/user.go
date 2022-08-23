@@ -37,12 +37,12 @@ type Work struct {
 	Artist      Artist `gorm:"foreignkey:ArtistID"`
 	ArtistID    uint
 
-	Exibition    Exibition `gorm:"foreignkey:ExibitionsID"`
-	ExibitionsID uint
+	Exhibition    Exhibition `gorm:"foreignkey:ExhibitionsID"`
+	ExhibitionsID uint
 }
-type Exibition struct {
-	ExibitionID uint `gorm:"primarykey"`
-	Name        string
+type Exhibition struct {
+	ExhibitionID uint `gorm:"primarykey"`
+	Name         string
 	// Nft         Nft `gorm:"foreignkey:NftsID"`
 	// NftsID      uint
 	Description string
