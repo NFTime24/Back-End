@@ -76,7 +76,7 @@ func PostExhibition(c echo.Context) error {
 	file_id := uint(file)
 	var id uint
 	var exhibition_id model.Exhibition
-	db.Model(&exhibition_id).Pluck("exhibitionID", &id)
+	db.Model(&exhibition_id).Pluck("ExhibitionID", &id)
 
 	id += 1
 	fmt.Println(id)
