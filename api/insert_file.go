@@ -14,69 +14,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// @Summary get specific work
-// @Description Get works
-// @Tags Work
-// @Accept json
-// @Produce json
-// @Param name query string true "name"
-// @Router /work/specific [get]
-func GetSpecificWork(c echo.Context) error {
-	name := c.QueryParam("name")
-	// 구조체 멤버변수 이름과 DB에서 가져오는 컬럼명이 일치해야함
-	type Result struct {
-		WorkName        string
-		ArtistName      string
-		WorkDescription string
-	}
-	db := db.DbManager()
-
-	// var artists model.Artist
-	var works model.Work
-	var results Result
-
-	// select w.name as work_name, a.name as artist_name, w.description from works w join artists a on w.artist_id = a.id;
-	db.Model(works).Select("works.name as work_name, works.description as work_description, artists.name as artist_name").Joins("left join artists on works.work_id = artists.id").Where("works.name=?", name).Scan(&results)
-	fmt.Println(results)
-	return c.JSON(http.StatusOK, results)
-}
-
-// @Summary get top 10 works
-// @Description get top 10 works
-// @Tags Work
-// @Accept json
-// @Produce json
-// @Router /work/top10 [get]
-func GetTop10Works(c echo.Context) error {
-	// 구조체 멤버변수 이름과 DB에서 가져오는 컬럼명이 일치해야함
-	// filepath, workname, artistname
-	type Result struct {
-		WorkName   string
-		ArtistName string
-		FilePath   string
-	}
-	db := db.DbManager()
-
-	// var artists model.Artist
-	var works model.Work
-	var results []Result
-
-	// select w.name as work_name, a.name as artist_name, w.description from works w join artists a on w.artist_id = a.id;
-	rows, err := db.Model(works).Select("works.name as work_name, f.path as file_path, a.name as artist_name").
-		Joins("left join files as f on works.file_id = f.id").
-		Joins("left join artists as a on works.artist_id = a.id").Rows()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(rows)
-	defer rows.Close()
-	for rows.Next() {
-		db.ScanRows(rows, &results)
-	}
-	fmt.Println(results)
-	return c.JSON(http.StatusOK, results)
-}
-
 func UploadWork(c echo.Context) error {
 
 	db := db.DbManager()
