@@ -168,11 +168,12 @@ func GetWorkInfoWithId(c echo.Context) error {
 		ArtistName    string `json:"artist_name"`
 		ProfilePath   string `json:"artist_profile_path"`
 		ArtistAddress string `json:"artist_address"`
+		ExhibitionId  uint   `json:"exhibition_id"`
 	}
 
 	db := db.DbManager()
 	var results Result
-	db.Select(`w.work_id as work_id,
+	db.Select(`w.work_id as work_id, w.exhibitions_id as exhibition_id,
 	 w.name as work_name, w.price as price, w.description as description, 
 	 w.category as work_category, f.filename as file_name, f.filesize as file_size, 
 	 f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path, 
