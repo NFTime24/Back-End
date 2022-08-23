@@ -20,7 +20,7 @@ definitions:
       work_id:
         type: integer
     type: object
-host: localhost
+host: 34.212.84.161
 info:
   contact: {}
   title: NFTime Sample Swagger API
