@@ -15,9 +15,7 @@ import (
 // @Tags Like
 // @Accept json
 // @Produce json
-// @Param UserId body string true "id of user"
-// @Param WorkId body string true "id of work"
-// @Param test formData file true "test"
+// @Param like body model.LikeCreateParam true "like data"
 // @Router /like [post]
 func UpdateLike(c echo.Context) (err error) {
 	db := db.DbManager()

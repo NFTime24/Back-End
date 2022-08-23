@@ -10,6 +10,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @Summary update exibition
+// @Description update exibition
+// @Tags Exibition
+// @Accept json
+// @Produce json
+// @Param like body model.ExibitionCreateParam true "exibition data"
+// @Router /exibition [post]
 func PostExibition(c echo.Context) error {
 	db := db.DbManager()
 

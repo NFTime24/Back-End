@@ -1,5 +1,26 @@
 basePath: /
-host: 34.212.84.161
+definitions:
+  model.ExibitionCreateParam:
+    properties:
+      description:
+        type: string
+      end_date:
+        type: string
+      file_id:
+        type: string
+      name:
+        type: string
+      start_date:
+        type: string
+    type: object
+  model.LikeCreateParam:
+    properties:
+      user_id:
+        type: integer
+      work_id:
+        type: integer
+    type: object
+host: localhost
 info:
   contact: {}
   title: NFTime Sample Swagger API
@@ -16,6 +37,23 @@ paths:
       summary: Get specific NFT
       tags:
       - exibition
+    post:
+      consumes:
+      - application/json
+      description: update exibition
+      parameters:
+      - description: exibition data
+        in: body
+        name: like
+        required: true
+        schema:
+          $ref: '#/definitions/model.ExibitionCreateParam'
+      produces:
+      - application/json
+      responses: {}
+      summary: update exibition
+      tags:
+      - Exibition
   /file-upload:
     post:
       consumes:
@@ -82,23 +120,12 @@ paths:
       - application/json
       description: update like
       parameters:
-      - description: id of user
+      - description: like data
         in: body
-        name: UserId
+        name: like
         required: true
         schema:
-          type: string
-      - description: id of work
-        in: body
-        name: WorkId
-        required: true
-        schema:
-          type: string
-      - description: test
-        in: formData
-        name: test
-        required: true
-        type: file
+          $ref: '#/definitions/model.LikeCreateParam'
       produces:
       - application/json
       responses: {}

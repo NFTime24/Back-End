@@ -91,7 +91,7 @@ func GetWorksInfoInExibition(c echo.Context) error {
 	for rows.Next() {
 		db.ScanRows(rows, &results)
 	}
-	// grayscale := "_grayscale"
+
 	for key, _ := range results {
 		for key, _ := range results_user {
 			if results[key].WorkName == results_user[key].WorkName {

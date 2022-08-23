@@ -5,7 +5,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "34.212.84.161",
+    "host": "localhost",
     "basePath": "/",
     "paths": {
         "/exibition": {
@@ -21,6 +21,31 @@
                     "exibition"
                 ],
                 "summary": "Get specific NFT",
+                "responses": {}
+            },
+            "post": {
+                "description": "update exibition",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exibition"
+                ],
+                "summary": "update exibition",
+                "parameters": [
+                    {
+                        "description": "exibition data",
+                        "name": "like",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ExibitionCreateParam"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -127,29 +152,13 @@
                 "summary": "update like",
                 "parameters": [
                     {
-                        "description": "id of user",
-                        "name": "UserId",
+                        "description": "like data",
+                        "name": "like",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.LikeCreateParam"
                         }
-                    },
-                    {
-                        "description": "id of work",
-                        "name": "WorkId",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "type": "file",
-                        "description": "test",
-                        "name": "test",
-                        "in": "formData",
-                        "required": true
                     }
                 ],
                 "responses": {}
@@ -194,6 +203,39 @@
                 ],
                 "summary": "get top 10 works",
                 "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "model.ExibitionCreateParam": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "file_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.LikeCreateParam": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "integer"
+                },
+                "work_id": {
+                    "type": "integer"
+                }
             }
         }
     }
