@@ -9,7 +9,7 @@ definitions:
       artist_profile_id:
         type: string
     type: object
-  model.ExibitionCreateParam:
+  model.ExhibitionCreateParam:
     properties:
       description:
         type: string
@@ -78,7 +78,7 @@ paths:
       summary: update artist
       tags:
       - Artist
-  /exibition:
+  /exhibition:
     get:
       consumes:
       - application/json
@@ -88,24 +88,24 @@ paths:
       responses: {}
       summary: Get specific NFT
       tags:
-      - Exibition
+      - exhibition
     post:
       consumes:
       - application/json
-      description: update exibition
+      description: update exhibition
       parameters:
-      - description: exibition data
+      - description: exhibition data
         in: body
         name: like
         required: true
         schema:
-          $ref: '#/definitions/model.ExibitionCreateParam'
+          $ref: '#/definitions/model.ExhibitionCreateParam'
       produces:
       - application/json
       responses: {}
-      summary: update exibition
+      summary: update exhibition
       tags:
-      - Exibition
+      - exhibition
   /file-upload:
     post:
       consumes:

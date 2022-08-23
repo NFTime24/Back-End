@@ -56,7 +56,7 @@ func ShowAllExhibitions(c echo.Context) error {
 // @Tags exhibition
 // @Accept json
 // @Produce json
-// @Param like body model.exhibitionCreateParam true "exhibition data"
+// @Param like body model.ExhibitionCreateParam true "exhibition data"
 // @Router /exhibition [post]
 func PostExhibition(c echo.Context) error {
 	db := db.DbManager()

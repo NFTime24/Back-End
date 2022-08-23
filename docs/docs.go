@@ -57,7 +57,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/exibition": {
+        "/exhibition": {
             "get": {
                 "description": "Get nft info",
                 "consumes": [
@@ -67,13 +67,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Exibition"
+                    "exhibition"
                 ],
                 "summary": "Get specific NFT",
                 "responses": {}
             },
             "post": {
-                "description": "update exibition",
+                "description": "update exhibition",
                 "consumes": [
                     "application/json"
                 ],
@@ -81,17 +81,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Exibition"
+                    "exhibition"
                 ],
-                "summary": "update exibition",
+                "summary": "update exhibition",
                 "parameters": [
                     {
-                        "description": "exibition data",
+                        "description": "exhibition data",
                         "name": "like",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ExibitionCreateParam"
+                            "$ref": "#/definitions/model.ExhibitionCreateParam"
                         }
                     }
                 ],
@@ -297,7 +297,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ExibitionCreateParam": {
+        "model.ExhibitionCreateParam": {
             "type": "object",
             "properties": {
                 "description": {
