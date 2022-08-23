@@ -250,3 +250,58 @@ func GetTop10Works(c echo.Context) error {
 	fmt.Println(results)
 	return c.JSON(http.StatusOK, results)
 }
+
+// @Summary Get specific Work
+// @Description Get work info in Exibition
+// @Tags NFT
+// @Accept json
+// @Produce json
+// @Param ex_id query string true "ex_id"
+// @Router /getWorksInExibition [get]
+func GetWorksInExhibition(c echo.Context) error {
+
+	// nft_owner := c.QueryParam("owner_address")
+	ex_id_str := c.QueryParam("ex_id")
+	ex_id, _ := strconv.ParseUint(ex_id_str, 10, 64)
+
+	type Result struct {
+		WorkId        int    `json:"work_id"`
+		WorkName      string `json:"work_name"`
+		Price         int    `json:"work_price"`
+		Description   string `json:"description"`
+		WorkCategory  string `json:"category"`
+		FileName      string `json:"filename"`
+		FileSize      int    `json:"filesize"`
+		FileType      string `json:"filetype"`
+		FilePath      string `json:"path"`
+		ThumbnailPath string `json:"thumbnail_path"`
+		ArtistName    string `json:"artist_name"`
+		ProfilePath   string `json:"artist_profile_path"`
+		ArtistAddress string `json:"artist_address"`
+		ExhibitionId  uint   `json:"exhibition_id"`
+	}
+
+	db := db.DbManager()
+	var users model.User
+	var results []Result
+
+	rows, err := db.Model(users).Select(`w.work_id as work_id, w.exhibitions_id as exhibition_id,
+	 w.name as work_name, w.price as price, w.description as description, 
+	 w.category as work_category,f.filename as file_name, f.filesize as file_size, 
+	 f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path, 
+	 a.address as artist_address, users.id as user_id`).
+		Joins("left join files as f on w.file_id = f.id").
+		Joins("left join files as t on f.thumbnail_id = t.id").
+		Joins("left join artists as a on w.artist_id = a.id").
+		Joins("left join files as p on a.profile_id = p.id").
+		Joins("left join exhibitions as e on e.exhibition_id = w.exhibitions_id").
+		Where("w.exhibitions_id=?", ex_id).Rows()
+	if err != nil {
+		panic(err)
+	}
+	for rows.Next() {
+		db.ScanRows(rows, &results)
+	}
+
+	return c.JSON(http.StatusOK, results)
+}

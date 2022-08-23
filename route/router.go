@@ -23,9 +23,9 @@ func Init() *echo.Echo {
 	e.POST("/artist", api.PostArtist)
 	e.POST("/workInfo", api.PostWork)
 	e.POST("/file-upload", api.UploadWork)
+	e.GET("/getWorksInExibition", api.GetWorksInExhibition)
 	e.GET("/getWorksInfo", api.GetWorksInfoInExhibition)
 	e.GET("/artist", api.ShowAllArtists)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-
 	return e
 }
