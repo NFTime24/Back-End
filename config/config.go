@@ -18,6 +18,7 @@ func GetConfig() Configuration {
 	configuration := Configuration{}
 	if os.Getenv("APP_ENV") == "localhost" {
 		gonfig.GetConf("config/config_local.json", &configuration)
+		//gonfig.GetConf("config/config.json", &configuration)
 	} else {
 		gonfig.GetConf("config/config.json", &configuration)
 	}
