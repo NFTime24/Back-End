@@ -106,6 +106,27 @@ paths:
       summary: update exibition
       tags:
       - Exibition
+  /file-upload:
+    post:
+      consumes:
+      - application/json
+      description: Post file
+      parameters:
+      - description: file you want to upload
+        in: formData
+        name: upload_file
+        required: true
+        type: file
+      - description: thumbnail of the file you uploaded
+        in: formData
+        name: thumbnail_file
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      summary: Post File
+      tags:
+      - File
   /getNFTInfoWithId:
     get:
       consumes:

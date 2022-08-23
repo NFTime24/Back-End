@@ -14,6 +14,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @Summary Post File
+// @Description Post file
+// @Tags File
+// @Accept json
+// @Produce json
+// @Param upload_file formData file true "file you want to upload"
+// @Param thumbnail_file formData file false "thumbnail of the file you uploaded"
+// @Router /file-upload [post]
 func UploadWork(c echo.Context) error {
 
 	db := db.DbManager()

@@ -98,6 +98,37 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/file-upload": {
+            "post": {
+                "description": "Post file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Post File",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file you want to upload",
+                        "name": "upload_file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "thumbnail of the file you uploaded",
+                        "name": "thumbnail_file",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/getNFTInfoWithId": {
             "get": {
                 "description": "Get nft info",
