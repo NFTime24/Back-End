@@ -290,6 +290,7 @@ func GetWorksInExhibition(c echo.Context) error {
 	 w.category as work_category,f.filename as file_name, f.filesize as file_size, 
 	 f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path, 
 	 a.address as artist_address`).
+		Joins("left join nfts as n on users.id = n.owner_id").
 		Joins("left join works as w on n.works_id = w.work_id").
 		Joins("left join files as f on w.file_id = f.id").
 		Joins("left join files as t on f.thumbnail_id = t.id").
