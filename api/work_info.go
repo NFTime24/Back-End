@@ -282,15 +282,14 @@ func GetWorksInExhibition(c echo.Context) error {
 	}
 
 	db := db.DbManager()
-	// var users model.User
+	var users model.User
 	var results []Result
 
-	rows, err := db.Select(`w.work_id as work_id, w.exhibitions_id as exhibition_id,
+	rows, err := db.Model(users).Select(`w.work_id as work_id, w.exhibitions_id as exhibition_id,
 	 w.name as work_name, w.price as price, w.description as description, 
 	 w.category as work_category,f.filename as file_name, f.filesize as file_size, 
 	 f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path, 
 	 a.address as artist_address`).
-		Table("works as w").
 		Joins("left join works as w on n.works_id = w.work_id").
 		Joins("left join files as f on w.file_id = f.id").
 		Joins("left join files as t on f.thumbnail_id = t.id").
