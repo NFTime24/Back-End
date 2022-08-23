@@ -17,6 +17,20 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/artist": {
+            "get": {
+                "description": "Get All Artist Info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "artist info",
+                "responses": {}
+            },
             "post": {
                 "description": "update artist",
                 "consumes": [

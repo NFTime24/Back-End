@@ -42,3 +42,34 @@ func PostArtist(c echo.Context) error {
 	db.Create(&artist_insert)
 	return c.JSON(http.StatusOK, params["artist_name"])
 }
+
+// @Summary artist info
+// @Description Get All Artist Info
+// @Tags Artist
+// @Accept json
+// @Produce json
+// @Router /artist [get]
+func ShowAllArtists(c echo.Context) error {
+
+	type Result struct {
+		Id         uint   `json:"id"`
+		Name       string `json:"name"`
+		Address    string `json:"address"`
+		Profile_id uint   `json:"profile_id"`
+	}
+
+	db := db.DbManager()
+	var artists model.Artist
+	var results []Result
+	rows, err := db.Model(artists).Select(`artists.*`).Rows()
+
+	if err != nil {
+		panic(err)
+	}
+	for rows.Next() {
+		db.ScanRows(rows, &results)
+		fmt.Println(results[1])
+	}
+
+	return c.JSON(http.StatusOK, results)
+}

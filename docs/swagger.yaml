@@ -51,6 +51,16 @@ info:
   version: "1.0"
 paths:
   /artist:
+    get:
+      consumes:
+      - application/json
+      description: Get All Artist Info
+      produces:
+      - application/json
+      responses: {}
+      summary: artist info
+      tags:
+      - Artist
     post:
       consumes:
       - application/json
