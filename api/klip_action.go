@@ -100,3 +100,28 @@ func MintArt(c echo.Context) error {
 	return nil
 	//t.Execute(w, jData)
 }
+
+func AddNFTWithWorkId(c echo.Context) error {
+	work_id_str := c.QueryParam("work_id")
+	work_id, err := strconv.ParseUint(work_id_str, 10, 64)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	db := db.DbManager()
+	var nfts model.Nft
+	var result int
+
+	db.Model(nfts).Select(`MAX(nft_id)`).Scan(&result)
+
+	newItemId := result + 1
+
+	db.Create(model.Nft{
+		NftID:   uint(newItemId),
+		WorksID: uint(work_id),
+		OwnerID: 0,
+	})
+
+	resultStr := strconv.Itoa(newItemId)
+	return c.String(http.StatusOK, resultStr)
+}
