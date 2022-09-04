@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/big"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 	"github.com/duke/db"
 	"github.com/duke/model"
 	"github.com/labstack/echo/v4"
+	"github.com/umbracle/ethgo/abi"
 )
 
 var KlipRequestMap map[uint64]string
@@ -171,9 +173,9 @@ func MintArtWithoutPaying(c echo.Context) error {
 		"type": "auth",
 		"bapp": {
 			"name" : "NFTime",
-			"callback": { "success": "http:\/\/34.212.84.161\/onSuccessKlip?klip_key=%s", "fail": "" }
+			"callback": { "success": "http:\/\/34.212.84.161\/onSuccessKlip?klip_key=%s&nft_id=%s", "fail": "" }
 		}
-	}`, strconv.FormatUint(klipKey, 10))
+	}`, strconv.FormatUint(klipKey, 10), strconv.FormatUint(newItemId, 10))
 	reqBody := bytes.NewBufferString(reqBodyStr)
 	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
 	if err != nil {
@@ -211,6 +213,12 @@ func OnSuccessKlip(c echo.Context) error {
 		fmt.Printf(err.Error())
 	}
 
+	nftId_str := c.QueryParam("nft_id")
+	nftId, err := strconv.ParseUint(nftId_str, 10, 64)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
 	requestKey := KlipRequestMap[klipKey]
 
 	fmt.Println(requestKey)
@@ -238,17 +246,39 @@ func OnSuccessKlip(c echo.Context) error {
 	fmt.Printf("Klaytn address: %s", jData.Result.KlaytnAddress)
 	fmt.Println("")
 
+	typ := abi.MustNewType("uint256")
+	nftId_big := big.NewInt(int64(nftId))
+	encoded, err := typ.Encode(nftId_big)
+	if err != nil {
+		panic(err)
+	}
+
+	nftId_hex := fmt.Sprintf("%x", encoded)
+	addressBase := "0000000000000000000000000000000000000000000000000000000000000000"
+	ablen := len(addressBase)
+	kalen := len(jData.Result.KlaytnAddress)
+	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], jData.Result.KlaytnAddress[2:])
+
+	reqCallData := "0x697d0413"
+	reqCallData += addr_hex
+	reqCallData += nftId_hex
+	reqCallData += "0000000000000000000000000000000000000000000000000000000000000060"
+	reqCallData += "0000000000000000000000000000000000000000000000000000000000000004"
+	reqCallData += "7465737400000000000000000000000000000000000000000000000000000000"
+
+	fmt.Println(reqCallData)
+
 	kasClient := &http.Client{}
 	kasReqStr := fmt.Sprintf("https://wallet-api.klaytnapi.com/v2/tx/contract/execute")
 	jsonStr := fmt.Sprintf(`{
 		"from": "0x7c07C1579aD1980863c83876EC4bec43BC8d6dFa",
 		"value": "0x0",
 		"to": "0xeb0912eff03e357c4cbb9c9c925ae01b2da1e486",
-		"input": "0x697d04130000000000000000000000007c07c1579ad1980863c83876ec4bec43bc8d6dfa0000000000000000000000000000000000000000000000000000000000000bb9000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000047465737400000000000000000000000000000000000000000000000000000000",
+		"input": %s,
 		"nonce": 0,
 		"gasLimit": 1000000,
 		"submit": true
-	}`)
+	}`, reqCallData)
 	kasReq, err := http.NewRequest("POST", kasReqStr, bytes.NewBufferString(jsonStr))
 	if err != nil {
 		fmt.Printf(err.Error())
