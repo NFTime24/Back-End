@@ -166,7 +166,7 @@ func MintArtWithoutPaying(c echo.Context) error {
 	successCallbackUrl += strconv.FormatUint(klipKey, 10)
 	reqBodyStr := fmt.Sprintf(`{
 		"bapp": {"name" : "NFTime"}, 
-		"callback": { "success": "%s", "fail": "" },
+		"callback": { "success": "url:%s", "fail": "" },
 		"type": "auth" 
 	}`, successCallbackUrl)
 	fmt.Print(reqBodyStr)
