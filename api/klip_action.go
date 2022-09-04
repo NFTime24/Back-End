@@ -213,7 +213,7 @@ func OnSuccessKlip(c echo.Context) error {
 
 	requestKey := KlipRequestMap[klipKey]
 
-	fmt.Print(requestKey)
+	fmt.Println(requestKey)
 
 	client := &http.Client{}
 	reqStr := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", requestKey)
@@ -234,6 +234,8 @@ func OnSuccessKlip(c echo.Context) error {
 	var jData KlipResponse
 	fmt.Printf("body: %s \n", body)
 	json.Unmarshal(body, &jData)
+
+	fmt.Printf("Klaytn address: %s", jData.Result.KlaytnAddress)
 
 	return c.String(http.StatusOK, requestKey)
 }
