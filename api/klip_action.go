@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/duke/db"
 	"github.com/duke/model"
@@ -260,7 +261,7 @@ func OnSuccessKlip(c echo.Context) error {
 	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], jData.Result.KlaytnAddress[2:])
 
 	reqCallData := "0x697d0413"
-	reqCallData += addr_hex
+	reqCallData += strings.ToLower(addr_hex)
 	reqCallData += nftId_hex
 	reqCallData += "0000000000000000000000000000000000000000000000000000000000000060"
 	reqCallData += "0000000000000000000000000000000000000000000000000000000000000004"
