@@ -9,7 +9,6 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/duke/db"
 	"github.com/duke/model"
@@ -261,7 +260,7 @@ func OnSuccessKlip(c echo.Context) error {
 	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], jData.Result.KlaytnAddress[2:])
 
 	reqCallData := "0x697d0413"
-	reqCallData += strings.ToLower(addr_hex)
+	reqCallData += addr_hex
 	reqCallData += nftId_hex
 	reqCallData += "0000000000000000000000000000000000000000000000000000000000000060"
 	reqCallData += "0000000000000000000000000000000000000000000000000000000000000004"
@@ -275,7 +274,7 @@ func OnSuccessKlip(c echo.Context) error {
 		"from": "0x7c07C1579aD1980863c83876EC4bec43BC8d6dFa",
 		"value": "0x0",
 		"to": "0xeb0912eff03e357c4cbb9c9c925ae01b2da1e486",
-		"input": %s,
+		"input": "%s",
 		"nonce": 0,
 		"gasLimit": 1000000,
 		"submit": true
