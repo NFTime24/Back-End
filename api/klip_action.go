@@ -237,5 +237,34 @@ func OnSuccessKlip(c echo.Context) error {
 
 	fmt.Printf("Klaytn address: %s", jData.Result.KlaytnAddress)
 
+	kasClient := &http.Client{}
+	kasReqStr := fmt.Sprintf("https://wallet-api.klaytnapi.com/v2/tx/contract/execute")
+	jsonStr := fmt.Sprintf(`{
+		"from": "0x7c07C1579aD1980863c83876EC4bec43BC8d6dFa",
+		"value": "0x0",
+		"to": "0xeb0912eff03e357c4cbb9c9c925ae01b2da1e486",
+		"input": "0x697d04130000000000000000000000007c07c1579ad1980863c83876ec4bec43bc8d6dfa0000000000000000000000000000000000000000000000000000000000000bb9000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000047465737400000000000000000000000000000000000000000000000000000000",
+		"nonce": 0,
+		"gasLimit": 1000000,
+		"submit": true
+	}`)
+	kasReq, err := http.NewRequest("POST", kasReqStr, bytes.NewBufferString(jsonStr))
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	kasReq.Header.Add("x-chain-id", "8217")
+	kasReq.Header.Add("Content-Type", "application/json")
+	kasReq.Header.Add("Authorization", "Basic S0FTS0NDRjIxR1VZUUdCOE83Q0JQR09GOm1waHN0cTllSDFTV1d6cXNFX3JrTEM0LTRCMDVFYWhyWmg5SVNFbWI=")
+	kasResp, err := kasClient.Do(req)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	defer kasResp.Body.Close()
+	kasBody, err := io.ReadAll(kasResp.Body)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	fmt.Printf("kas body: %s \n", kasBody)
+
 	return c.String(http.StatusOK, requestKey)
 }
