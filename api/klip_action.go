@@ -297,5 +297,5 @@ func OnSuccessKlip(c echo.Context) error {
 	}
 	fmt.Printf("kas body: %s \n", kasBody)
 
-	return c.String(http.StatusOK, requestKey)
+	return c.Redirect(http.StatusFound, "https://klipwallet.com/")
 }
