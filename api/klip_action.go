@@ -17,10 +17,15 @@ import (
 var KlipRequestMap map[uint64]string
 
 type KlipResponse struct {
-	RequestKey     string `json:"request_key"`
-	Status         string `json:"status"`
-	ExpirationTime int    `json:"expiration_time"`
-	RequestURL     string `json:"request_url"`
+	RequestKey     string     `json:"request_key"`
+	Status         string     `json:"status"`
+	Result         KlipResult `json:"result"`
+	ExpirationTime int        `json:"expiration_time"`
+	RequestURL     string     `json:"request_url"`
+}
+
+type KlipResult struct {
+	KlaytnAddress string `json:"klaytn_address"`
 }
 
 func MintArt(c echo.Context) error {
@@ -191,7 +196,7 @@ func MintArtWithoutPaying(c echo.Context) error {
 	jData.RequestURL = "https://klipwallet.com/?target=/a2a?request_key="
 	jData.RequestURL += jData.RequestKey
 
-	fmt.Printf(jData.RequestURL)
+	fmt.Println(jData.RequestURL)
 
 	// http.Redirect(w, r, jData.RequestQR, http.StatusFound)
 	c.Redirect(http.StatusFound, jData.RequestURL)
@@ -226,7 +231,9 @@ func OnSuccessKlip(c echo.Context) error {
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
+	var jData KlipResponse
 	fmt.Printf("body: %s \n", body)
+	json.Unmarshal(body, &jData)
 
 	return c.String(http.StatusOK, requestKey)
 }
