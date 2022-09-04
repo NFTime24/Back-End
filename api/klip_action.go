@@ -162,15 +162,13 @@ func MintArtWithoutPaying(c echo.Context) error {
 	})
 
 	klipKey := rand.Uint64()
-	successCallbackUrl := "http://34.212.84.161/onSuccessKlip?klip_key="
-	successCallbackUrl += strconv.FormatUint(klipKey, 10)
 	reqBodyStr := fmt.Sprintf(`{
 		"type": "auth",
 		"bapp": {
 			"name" : "NFTime",
-			"callback": { "success": "nftime:\/\/main", "fail": "" }
+			"callback": { "success": "http:\/\/34.212.84.161\/onSuccessKlip?klip_key=%s", "fail": "" }
 		}
-	}`)
+	}`, strconv.FormatUint(klipKey, 10))
 	fmt.Print(reqBodyStr)
 	reqBody := bytes.NewBufferString(reqBodyStr)
 	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
