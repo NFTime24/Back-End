@@ -169,7 +169,6 @@ func MintArtWithoutPaying(c echo.Context) error {
 			"callback": { "success": "http:\/\/34.212.84.161\/onSuccessKlip?klip_key=%s", "fail": "" }
 		}
 	}`, strconv.FormatUint(klipKey, 10))
-	fmt.Print(reqBodyStr)
 	reqBody := bytes.NewBufferString(reqBodyStr)
 	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
 	if err != nil {
@@ -210,6 +209,24 @@ func OnSuccessKlip(c echo.Context) error {
 	requestKey := KlipRequestMap[klipKey]
 
 	fmt.Print(requestKey)
+
+	client := &http.Client{}
+	reqStr := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", requestKey)
+	req, err := http.NewRequest("GET", reqStr, nil)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	fmt.Printf("body: %s \n", body)
 
 	return c.String(http.StatusOK, requestKey)
 }
