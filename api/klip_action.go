@@ -236,6 +236,7 @@ func OnSuccessKlip(c echo.Context) error {
 	json.Unmarshal(body, &jData)
 
 	fmt.Printf("Klaytn address: %s", jData.Result.KlaytnAddress)
+	fmt.Println("")
 
 	kasClient := &http.Client{}
 	kasReqStr := fmt.Sprintf("https://wallet-api.klaytnapi.com/v2/tx/contract/execute")
@@ -255,7 +256,7 @@ func OnSuccessKlip(c echo.Context) error {
 	kasReq.Header.Add("x-chain-id", "8217")
 	kasReq.Header.Add("Content-Type", "application/json")
 	kasReq.Header.Add("Authorization", "Basic S0FTS0NDRjIxR1VZUUdCOE83Q0JQR09GOm1waHN0cTllSDFTV1d6cXNFX3JrTEM0LTRCMDVFYWhyWmg5SVNFbWI=")
-	kasResp, err := kasClient.Do(req)
+	kasResp, err := kasClient.Do(kasReq)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
