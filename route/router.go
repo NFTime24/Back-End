@@ -14,6 +14,8 @@ func Init() *echo.Echo {
 	e.GET("/work/specific", api.GetSpecificWorkWithName)
 	e.GET("/work/top10", api.GetTop10Works)
 	e.GET("/mintArt", api.MintArt)
+	e.GET("/mintArtWithoutPaying", api.MintArtWithoutPaying)
+	e.GET("/onSuccessKlip", api.OnSuccessKlip)
 	e.GET("/addNFTWithWorkId", api.AddNFTWithWorkId)
 	e.GET("/getNFTInfoWithId", api.GetNFTInfoWithId)
 	e.GET("/getWorkIdWithNftId", api.GetWorkIdWithNftId)

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"strconv"
 
@@ -12,6 +13,8 @@ import (
 	"github.com/duke/model"
 	"github.com/labstack/echo/v4"
 )
+
+var KlipRequestMap map[uint64]string
 
 type KlipResponse struct {
 	RequestKey     string `json:"request_key"`
@@ -124,4 +127,86 @@ func AddNFTWithWorkId(c echo.Context) error {
 
 	resultStr := strconv.Itoa(newItemId)
 	return c.String(http.StatusOK, resultStr)
+}
+
+func MintArtWithoutPaying(c echo.Context) error {
+	work_id_str := c.QueryParam("work_id")
+	work_id, err := strconv.ParseUint(work_id_str, 10, 64)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	db := db.DbManager()
+	var nfts model.Nft
+	var result1 uint64
+
+	db.Model(nfts).Select(`MAX(nft_id)`).Scan(&result1)
+
+	var works model.Work
+	var result2 string
+
+	db.Model(works).Select(`a.address`).
+		Joins("left join test.artists as a on a.id = works.artist_id").
+		Where("works.work_id=?", work_id).
+		Scan(&result2)
+
+	newItemId := result1 + 1
+	artist_address := result2
+
+	fmt.Printf("\n newItemId: %d, artist_address: %s \n", newItemId, artist_address)
+
+	db.Create(model.Nft{
+		NftID:   uint(newItemId),
+		WorksID: uint(work_id),
+		OwnerID: 0,
+	})
+
+	klipKey := rand.Uint64()
+	successCallbackUrl := "http://34.212.84.161/onSuccessKlip?klip_key="
+	successCallbackUrl += strconv.FormatUint(klipKey, 10)
+	reqBodyStr := fmt.Sprintf(`{
+		"bapp": { "name" : "My BApp" }, 
+		"callback": { "success": "%s", "fail": "" }, 
+		"type": "auth" 
+	}`, successCallbackUrl)
+	reqBody := bytes.NewBufferString(reqBodyStr)
+	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	var jData KlipResponse
+	fmt.Printf("body: %s \n", body)
+	json.Unmarshal(body, &jData)
+	// t, err := template.ParseGlob("./templates/qr.html")
+	// if err != nil {
+	// 	fmt.Printf(err.Error())
+	// }
+	fmt.Printf("requestkey: %s \n", jData.RequestKey)
+	KlipRequestMap[klipKey] = jData.RequestKey
+	jData.RequestURL = "https://klipwallet.com/?target=/a2a?request_key="
+	jData.RequestURL += jData.RequestKey
+
+	fmt.Printf(jData.RequestURL)
+
+	// http.Redirect(w, r, jData.RequestQR, http.StatusFound)
+	c.Redirect(http.StatusFound, jData.RequestURL)
+	return nil
+	//t.Execute(w, jData)
+}
+
+func OnSuccessKlip(c echo.Context) error {
+	klipKey_str := c.QueryParam("klip_key")
+	klipKey, err := strconv.ParseUint(klipKey_str, 10, 64)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	requestKey := KlipRequestMap[klipKey]
+
+	return c.String(http.StatusOK, requestKey)
 }

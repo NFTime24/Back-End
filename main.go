@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/duke/api"
 	"github.com/duke/db"
 	_ "github.com/duke/docs"
 	"github.com/duke/route"
@@ -17,5 +18,8 @@ func main() {
 	db.Init()
 	e := route.Init()
 	fmt.Println("Home: ", os.Getenv("APP_ENV"))
+
+	api.KlipRequestMap = make(map[uint64]string)
+
 	e.Logger.Fatal(e.Start(":80"))
 }
