@@ -13,7 +13,7 @@ func GetUserWithAddress(c echo.Context) error {
 
 	type Result struct {
 		Address  string `json:"address"`
-		NickName string `json:"nickname"`
+		Nickname string `json:"nickname"`
 		Path     string `json:"path"`
 	}
 
