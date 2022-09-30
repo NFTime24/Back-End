@@ -234,6 +234,49 @@ func GetTopWorks(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
+func GetTodayWorks(c echo.Context) error {
+	type Result struct {
+		WorkId        int    `json:"work_id"`
+		WorkName      string `json:"work_name"`
+		Price         int    `json:"work_price"`
+		Description   string `json:"description"`
+		WorkCategory  string `json:"category"`
+		FileName      string `json:"filename"`
+		FileSize      int    `json:"filesize"`
+		FileType      string `json:"filetype"`
+		FilePath      string `json:"path"`
+		ThumbnailPath string `json:"thumbnail_path"`
+		ArtistName    string `json:"artist_name"`
+		ProfilePath   string `json:"artist_profile_path"`
+		ArtistAddress string `json:"artist_address"`
+		ExhibitionId  uint   `json:"exhibition_id"`
+	}
+
+	db := db.DbManager()
+	var results []Result
+	rows, err := db.Select(`w.work_id as work_id, w.exhibitions_id as exhibition_id,
+	 w.name as work_name, w.price as price, w.description as description, 
+	 w.category as work_category, f.filename as file_name, f.filesize as file_size, 
+	 f.filetype as file_type, f.path as file_path, t.path as thumbnail_path, a.name as artist_name, p.path as profile_path, 
+	 a.address as artist_address`).
+		Table(`(
+			select * from test.works
+			order by rand(CURDATE() + 0)
+			limit 4
+		) as w`).
+		Joins("left join files as f on w.file_id = f.id").
+		Joins("left join files as t on f.thumbnail_id = t.id").
+		Joins("left join artists as a on w.artist_id = a.id").
+		Joins("left join files as p on a.profile_id = p.id").Rows()
+	if err != nil {
+		panic(err)
+	}
+	for rows.Next() {
+		db.ScanRows(rows, &results)
+	}
+	return c.JSON(http.StatusOK, results)
+}
+
 // @Summary get specific work
 // @Description Get works
 // @Tags Work
