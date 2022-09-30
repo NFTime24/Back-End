@@ -13,7 +13,6 @@ func Init() *echo.Echo {
 	e.Static("/assets", "assets")
 	e.GET("/work/specific", api.GetSpecificWorkWithName)
 	e.GET("/work/top10", api.GetTop10Works)
-	e.GET("/mintArt", api.MintArt)
 	e.GET("/mintArtWithoutPaying", api.MintArtWithoutPaying)
 	e.GET("/onSuccessKlip", api.OnSuccessKlip)
 	e.GET("/addNFTWithWorkId", api.AddNFTWithWorkId)
