@@ -205,5 +205,5 @@ func OnSuccessKlip(c echo.Context) error {
 	}
 	fmt.Printf("kas body: %s \n", kasBody)
 
-	return c.Redirect(http.StatusFound, "https://klipwallet.com/")
+	return c.String(http.StatusOK, "Success Mint")
 }
