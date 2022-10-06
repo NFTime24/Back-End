@@ -140,7 +140,7 @@ func OnSuccessKlip(c echo.Context) error {
 
 	fmt.Println("Request URL: " + jData.RequestURL)
 
-	return c.Redirect(http.StatusFound, jData.RequestURL)
+	return c.Redirect(http.StatusFound, "/")
 }
 
 func MintToAddr(c echo.Context) error {
