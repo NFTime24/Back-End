@@ -11,5 +11,5 @@ func Home(c echo.Context) error {
 }
 
 func RedirectTest(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/getTopWorks")
+	return c.Redirect(http.StatusFound, "http://34.212.84.161/getTopWorks")
 }
