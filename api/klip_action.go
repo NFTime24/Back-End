@@ -136,7 +136,7 @@ func OnSuccessKlip(c echo.Context) error {
 	fmt.Printf("Klaytn address: %s", jData.Result.KlaytnAddress)
 	fmt.Println("")
 
-	jData.RequestURL = fmt.Sprintf("http://34.212.84.161/onSuccessKlip?address=%s&work_id=%s", jData.Result.KlaytnAddress, workId)
+	jData.RequestURL = fmt.Sprintf("http://34.212.84.161/mintToAddr?address=%s&work_id=%s", jData.Result.KlaytnAddress, workId)
 
 	return c.Redirect(http.StatusFound, jData.RequestURL)
 }
