@@ -191,24 +191,30 @@ func MintToAddr(c echo.Context) error {
 	fmt.Println("")
 
 	typ := abi.MustNewType("uint256")
+
 	nftId_big := big.NewInt(int64(newItemId))
-	encoded, err := typ.Encode(nftId_big)
+	nftId_encoded, err := typ.Encode(nftId_big)
 	if err != nil {
 		panic(err)
 	}
+	nftId_hex := fmt.Sprintf("%x", nftId_encoded)
 
-	nftId_hex := fmt.Sprintf("%x", encoded)
+	workId_big := big.NewInt(int64(workId))
+	workId_encoded, err := typ.Encode(workId_big)
+	if err != nil {
+		panic(err)
+	}
+	workId_hex := fmt.Sprintf("%x", workId_encoded)
+
 	addressBase := "0000000000000000000000000000000000000000000000000000000000000000"
 	ablen := len(addressBase)
 	kalen := len(address)
 	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], address[2:])
 
-	reqCallData := "0x697d0413"
+	reqCallData := "0x20b7668b"
 	reqCallData += addr_hex
 	reqCallData += nftId_hex
-	reqCallData += "0000000000000000000000000000000000000000000000000000000000000060"
-	reqCallData += "0000000000000000000000000000000000000000000000000000000000000004"
-	reqCallData += "7465737400000000000000000000000000000000000000000000000000000000"
+	reqCallData += workId_hex
 
 	fmt.Println(reqCallData)
 
@@ -217,7 +223,7 @@ func MintToAddr(c echo.Context) error {
 	jsonStr := fmt.Sprintf(`{
 		"from": "0x7c07C1579aD1980863c83876EC4bec43BC8d6dFa",
 		"value": "0x0",
-		"to": "0xeb0912eff03e357c4cbb9c9c925ae01b2da1e486",
+		"to": "0x63Ff714D28D84Eb336cEd92b9DAB59C8797D5bCB",
 		"input": "%s",
 		"nonce": 0,
 		"gasLimit": 1000000,
