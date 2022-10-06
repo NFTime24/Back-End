@@ -113,34 +113,52 @@ func OnSuccessKlip(c echo.Context) error {
 
 	fmt.Println(requestKey)
 
-	client := &http.Client{}
-	reqStr := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", requestKey)
-	req, err := http.NewRequest("GET", reqStr, nil)
+	client1 := &http.Client{}
+	reqStr1 := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", requestKey)
+	req1, err := http.NewRequest("GET", reqStr1, nil)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := client.Do(req)
+	req1.Header.Add("Content-Type", "application/json")
+	resp1, err := client1.Do(req1)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body1, err := io.ReadAll(resp1.Body)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	var jData KlipResponse
-	fmt.Printf("body: %s \n", body)
-	json.Unmarshal(body, &jData)
+	var jData1 KlipResponse
+	fmt.Printf("body1: %s \n", body1)
+	json.Unmarshal(body1, &jData1)
 
-	fmt.Printf("Klaytn address: %s", jData.Result.KlaytnAddress)
+	fmt.Printf("Klaytn address: %s", jData1.Result.KlaytnAddress)
 	fmt.Println("")
+	resp1.Body.Close()
 
-	jData.RequestURL = fmt.Sprintf("http://34.212.84.161/mintToAddr?address=%s&work_id=%s", jData.Result.KlaytnAddress, workId)
+	client2 := &http.Client{}
+	reqStr2 := fmt.Sprintf("http://34.212.84.161/mintToAddr?address=%s&work_id=%s", jData1.Result.KlaytnAddress, workId)
+	req2, err := http.NewRequest("GET", reqStr2, nil)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	resp2, err := client2.Do(req2)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	body2, err := io.ReadAll(resp2.Body)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	fmt.Printf("body2: %s \n", body2)
 
-	fmt.Println("Request URL: " + jData.RequestURL)
+	resString := string(body2[:])
 
-	return c.Redirect(http.StatusFound, "http://34.212.84.161/getTopWorks")
+	fmt.Printf("result: %s", resString)
+	fmt.Println("")
+	resp2.Body.Close()
+
+	return c.String(http.StatusOK, resString)
 }
 
 func MintToAddr(c echo.Context) error {
