@@ -150,6 +150,9 @@ func MintToAddr(c echo.Context) error {
 		fmt.Printf(err.Error())
 	}
 
+	fmt.Printf("Work Id: %d", workId)
+	fmt.Println("")
+
 	db := db.DbManager()
 	var nfts model.Nft
 	var result uint64
