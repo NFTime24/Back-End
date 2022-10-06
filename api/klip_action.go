@@ -140,7 +140,7 @@ func OnSuccessKlip(c echo.Context) error {
 
 	fmt.Println("Request URL: " + jData.RequestURL)
 
-	return c.Redirect(http.StatusFound, jData.RequestURL)
+	return c.Redirect(http.StatusMovedPermanently, jData.RequestURL)
 }
 
 func MintToAddr(c echo.Context) error {
@@ -183,7 +183,7 @@ func MintToAddr(c echo.Context) error {
 	addressBase := "0000000000000000000000000000000000000000000000000000000000000000"
 	ablen := len(addressBase)
 	kalen := len(address)
-	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], address)
+	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], address[2:])
 
 	reqCallData := "0x697d0413"
 	reqCallData += addr_hex
