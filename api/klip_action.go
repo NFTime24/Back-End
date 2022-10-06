@@ -107,29 +107,11 @@ func OnSuccessKlip(c echo.Context) error {
 		fmt.Printf(err.Error())
 	}
 
-	workId_str := c.QueryParam("work_id")
-	workId, err := strconv.ParseUint(workId_str, 10, 64)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
+	workId := c.QueryParam("work_id")
 
 	requestKey := KlipRequestMap[klipKey]
 
 	fmt.Println(requestKey)
-
-	db := db.DbManager()
-	var nfts model.Nft
-	var result uint64
-
-	db.Model(nfts).Select(`MAX(nft_id)`).Scan(&result)
-
-	newItemId := result + 1
-
-	db.Create(model.Nft{
-		NftID:   uint(newItemId),
-		WorksID: uint(workId),
-		OwnerID: 0,
-	})
 
 	client := &http.Client{}
 	reqStr := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", requestKey)
@@ -154,6 +136,37 @@ func OnSuccessKlip(c echo.Context) error {
 	fmt.Printf("Klaytn address: %s", jData.Result.KlaytnAddress)
 	fmt.Println("")
 
+	jData.RequestURL = fmt.Sprintf("http://34.212.84.161/onSuccessKlip?address=%s&work_id=%s", jData.Result.KlaytnAddress, workId)
+
+	return c.Redirect(http.StatusFound, jData.RequestURL)
+}
+
+func MintToAddr(c echo.Context) error {
+	address := c.QueryParam("address")
+
+	workId_str := c.QueryParam("work_id")
+	workId, err := strconv.ParseUint(workId_str, 10, 64)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	db := db.DbManager()
+	var nfts model.Nft
+	var result uint64
+
+	db.Model(nfts).Select(`MAX(nft_id)`).Scan(&result)
+
+	newItemId := result + 1
+
+	db.Create(model.Nft{
+		NftID:   uint(newItemId),
+		WorksID: uint(workId),
+		OwnerID: 0,
+	})
+
+	fmt.Printf("Klaytn address: %s", address)
+	fmt.Println("")
+
 	typ := abi.MustNewType("uint256")
 	nftId_big := big.NewInt(int64(newItemId))
 	encoded, err := typ.Encode(nftId_big)
@@ -164,8 +177,8 @@ func OnSuccessKlip(c echo.Context) error {
 	nftId_hex := fmt.Sprintf("%x", encoded)
 	addressBase := "0000000000000000000000000000000000000000000000000000000000000000"
 	ablen := len(addressBase)
-	kalen := len(jData.Result.KlaytnAddress)
-	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], jData.Result.KlaytnAddress[2:])
+	kalen := len(address)
+	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], address)
 
 	reqCallData := "0x697d0413"
 	reqCallData += addr_hex
