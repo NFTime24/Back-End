@@ -34,5 +34,7 @@ func Init() *echo.Echo {
 	e.GET("/artist", api.ShowAllArtists)
 	e.GET("/getUserWithAddress", api.GetUserWithAddress)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
+	e.GET("/redirectTest", api.RedirectTest)
 	return e
 }
