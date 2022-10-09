@@ -21,6 +21,7 @@ func Init() *echo.Echo {
 	e.GET("/getWorkIdWithNftId", api.GetWorkIdWithNftId)
 	e.GET("/getWorkInfoWithId", api.GetWorkInfoWithId)
 	e.GET("/getTopWorks", api.GetTopWorks)
+	e.GET("/getTopWorksWithCategory", api.GetTopWorksWithCategory)
 	e.GET("/getTodayWorks", api.GetTodayWorks)
 	e.GET("/getNewWorks", api.GetNewWorks)
 	e.POST("/like", api.UpdateLike)
