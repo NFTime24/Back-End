@@ -85,7 +85,7 @@ func GetActiveArtistNames(c echo.Context) error {
 	db := db.DbManager()
 	var results []Result
 	rows, err := db.Select(`a.*`).
-		Table(`artist as a`).
+		Table(`artists as a`).
 		Joins("join works as w on w.artist_id = a.id").
 		Group("a.id").Rows()
 	if err != nil {
