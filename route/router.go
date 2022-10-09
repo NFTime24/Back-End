@@ -28,6 +28,7 @@ func Init() *echo.Echo {
 	e.POST("/like", api.UpdateLike)
 	e.GET("/exhibition", api.ShowAllExhibitions)
 	e.POST("/exhibition", api.PostExhibition)
+	e.POST("/user", api.PostUser)
 	e.POST("/artist", api.PostArtist)
 	e.POST("/workInfo", api.PostWork)
 	e.POST("/file-upload", api.UploadWork)
