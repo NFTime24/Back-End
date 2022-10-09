@@ -74,7 +74,7 @@ func ShowAllArtists(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-func GetActiveArtistNames(c echo.Context) error {
+func GetActiveArtists(c echo.Context) error {
 	type Result struct {
 		Id         uint   `json:"id"`
 		Name       string `json:"name"`
