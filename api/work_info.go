@@ -189,6 +189,7 @@ func GetWorkInfoWithId(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
+// deprecated
 func GetTopWorks(c echo.Context) error {
 	type Result struct {
 		WorkId        int    `json:"work_id"`
