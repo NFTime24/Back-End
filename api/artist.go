@@ -73,3 +73,26 @@ func ShowAllArtists(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, results)
 }
+
+func GetActiveArtistNames(c echo.Context) error {
+	type Result struct {
+		Id         uint   `json:"id"`
+		Name       string `json:"name"`
+		Address    string `json:"address"`
+		Profile_id uint   `json:"profile_id"`
+	}
+
+	db := db.DbManager()
+	var results []Result
+	rows, err := db.Select(`a.*`).
+		Table(`artist as a`).
+		Joins("join works as w on w.artist_id = a.id").
+		Group("a.id").Rows()
+	if err != nil {
+		panic(err)
+	}
+	for rows.Next() {
+		db.ScanRows(rows, &results)
+	}
+	return c.JSON(http.StatusOK, results)
+}
