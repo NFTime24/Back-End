@@ -26,7 +26,7 @@ func PostUser(c echo.Context) error {
 	profile, _ := strconv.ParseUint(user_profile_str, 10, 32)
 	user_profile_id := uint(profile)
 
-	db.Model(&user_id).Pluck("ID", &id)
+	db.Model(&user_id).Select("id").Last(&id)
 	id += 1
 	fmt.Println(id)
 
