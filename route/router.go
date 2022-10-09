@@ -24,6 +24,7 @@ func Init() *echo.Echo {
 	e.GET("/getTopWorksWithCategory", api.GetTopWorksWithCategory)
 	e.GET("/getTodayWorks", api.GetTodayWorks)
 	e.GET("/getNewWorks", api.GetNewWorks)
+	e.GET("/getAllWorks", api.GetAllWorks)
 	e.POST("/like", api.UpdateLike)
 	e.GET("/exhibition", api.ShowAllExhibitions)
 	e.POST("/exhibition", api.PostExhibition)
