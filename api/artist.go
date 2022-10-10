@@ -99,22 +99,24 @@ func GetActiveArtists(c echo.Context) error {
 
 func GetTopArtists(c echo.Context) error {
 	type Result struct {
-		Id         uint   `json:"id"`
-		Name       string `json:"name"`
-		Address    string `json:"address"`
-		Profile_id uint   `json:"profile_id"`
+		Id          uint   `json:"id"`
+		Name        string `json:"name"`
+		Address     string `json:"address"`
+		ProfileId   uint   `json:"profile_id"`
+		ProfilePath string `json:"profile_path"`
 	}
 
 	db := db.DbManager()
 	var results []Result
-	rows, err := db.Select(`a.*`).
+	rows, err := db.Select(`a.*, f.path`).
 		Table(`(
 			Select w.artist_id, count(w.artist_id) as count
 			from test.nfts as n
 			left join test.works as w on w.work_id = n.works_id
 			group by w.artist_id
 			order by count desc ) as base`).
-		Joins("left join artists as a on base.artist_id = a.id").Rows()
+		Joins("left join artists as a on base.artist_id = a.id").
+		Joins("left join files as f on f.id = a.profile_id").Rows()
 	if err != nil {
 		panic(err)
 	}
