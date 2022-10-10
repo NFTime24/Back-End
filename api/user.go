@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/duke/db"
 	"github.com/duke/model"
@@ -14,18 +15,24 @@ func PostUser(c echo.Context) error {
 	params := make(map[string]string)
 	test := c.Bind(&params)
 	fmt.Println(test)
-	fmt.Println(params["user_nickname"], params["user_address"])
+	fmt.Println(params["user_nickname"], params["user_address"], params["user_profile_id"])
 
 	var id uint
 	var user_id model.User
 	user_nickname := params["user_nickname"]
 	user_address := params["user_address"]
+	user_profile_str := params["user_profile_id"]
+
+	profile, _ := strconv.ParseUint(user_profile_str, 10, 32)
+	user_profile_id := uint(profile)
+
+	fmt.Println("user profile id", user_profile_id)
 
 	db.Model(&user_id).Select("id").Last(&id)
 	id += 1
 	fmt.Println(id)
 
-	user_insert := model.User{ID: id, Address: user_address, Nickname: user_nickname}
+	user_insert := model.User{ID: id, Address: user_address, Nickname: user_nickname, ProfileID: user_profile_id}
 
 	db.Create(&user_insert)
 	return c.JSON(http.StatusOK, params["user_address"])
