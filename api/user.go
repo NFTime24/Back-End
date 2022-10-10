@@ -44,7 +44,22 @@ func PostUser(c echo.Context) error {
 		db.Create(&user_insert)
 	}
 
-	return c.JSON(http.StatusOK, params["user_address"])
+	type Result struct {
+		Id        uint   `json:"id"`
+		Address   string `json:"address"`
+		Nickname  string `json:"nickname"`
+		ProfileID uint   `json:"profile_id"`
+		Path      string `json:"path"`
+	}
+
+	var result Result
+	db.Select(`u.*, f.path`).
+		Table("users as u").
+		Joins("left join files as f on f.id = u.profile_id").
+		Where("u.address=?", checkAddress).Scan(&result)
+
+	fmt.Println(result)
+	return c.JSON(http.StatusOK, result)
 }
 
 func GetUserWithAddress(c echo.Context) error {
