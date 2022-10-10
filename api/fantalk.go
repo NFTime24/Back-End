@@ -23,7 +23,7 @@ func PostFantalk(c echo.Context) error {
 	owner_id, _ := strconv.ParseUint(params["owner_id"], 10, 32)
 	post_text := params["post_text"]
 
-	db.Select("id").Table("fantalks").Last(&id)
+	db.Select("post_id").Table("fantalks").Last(&id)
 	id += 1
 	fmt.Println("new id:", id)
 
