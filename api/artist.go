@@ -99,11 +99,11 @@ func GetActiveArtists(c echo.Context) error {
 
 func GetTopArtists(c echo.Context) error {
 	type Result struct {
-		Id          uint   `json:"id"`
-		Name        string `json:"name"`
-		Address     string `json:"address"`
-		ProfileId   uint   `json:"profile_id"`
-		ProfilePath string `json:"profile_path"`
+		Id        uint   `json:"id"`
+		Name      string `json:"name"`
+		Address   string `json:"address"`
+		ProfileId uint   `json:"profile_id"`
+		Path      string `json:"path"`
 	}
 
 	db := db.DbManager()
