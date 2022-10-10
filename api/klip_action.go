@@ -30,87 +30,6 @@ type KlipResult struct {
 	KlaytnAddress string `json:"klaytn_address"`
 }
 
-func MintArt(c echo.Context) error {
-	work_id_str := c.QueryParam("work_id")
-	work_id, err := strconv.ParseUint(work_id_str, 10, 64)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-
-	osType := c.QueryParam("os_type") // "ios" or "aos"
-
-	db := db.DbManager()
-	var nfts model.Nft
-	var result1 uint64
-
-	db.Model(nfts).Select(`MAX(nft_id)`).Scan(&result1)
-
-	var works model.Work
-	var result2 string
-
-	db.Model(works).Select(`a.address`).
-		Joins("left join test.artists as a on a.id = works.artist_id").
-		Where("works.work_id=?", work_id).
-		Scan(&result2)
-
-	newItemId := result1 + 1
-	artist_address := result2
-
-	fmt.Printf("\n newItemId: %d, artist_address: %s \n", newItemId, artist_address)
-
-	db.Create(model.Nft{
-		NftID:   uint(newItemId),
-		WorksID: uint(work_id),
-		OwnerID: 0,
-		// ExibitionsID: 1,
-	})
-
-	reqBodyStr := fmt.Sprintf(`{
-		"bapp": { "name" : "NFTime" }, 
-		"type": "execute_contract", 
-		"transaction": { 
-			"to": "0xf1cB5DDF7E8E9Af429b79473c41Dd85750Faa7af", 
-			"value": "0", 
-			"abi": "{ \"inputs\": [ { \"internalType\": \"uint256\", \"name\": \"newItemId\", \"type\": \"uint256\" }, { \"internalType\": \"string\", \"name\": \"artist_address\", \"type\": \"string\" } ], \"name\": \"mintArt\", \"outputs\": [ { \"internalType\": \"uint256\", \"name\": \"\", \"type\": \"uint256\" } ], \"stateMutability\": \"nonpayable\", \"type\": \"function\" }", 
-			"params": "[%d, \"%s\"]"
-		} 
-	}`, newItemId, artist_address)
-
-	reqBody := bytes.NewBufferString(reqBodyStr)
-	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	var jData KlipResponse
-	fmt.Printf("body: %s \n", body)
-	json.Unmarshal(body, &jData)
-	// t, err := template.ParseGlob("./templates/qr.html")
-	// if err != nil {
-	// 	fmt.Printf(err.Error())
-	// }
-	fmt.Printf("requestkey: %s \n", jData.RequestKey)
-	if osType == "ios" {
-		jData.RequestURL = "kakaotalk://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
-		jData.RequestURL += jData.RequestKey
-	} else {
-		jData.RequestURL = "intent://klipwallet/open?url=https://klipwallet.com/?target=/a2a?request_key="
-		jData.RequestURL += jData.RequestKey
-		jData.RequestURL += "#Intent;scheme=kakaotalk;package=com.kakao.talk;end"
-	}
-
-	fmt.Printf(jData.RequestURL)
-
-	// http.Redirect(w, r, jData.RequestQR, http.StatusFound)
-	c.Redirect(http.StatusFound, jData.RequestURL)
-	return nil
-	//t.Execute(w, jData)
-}
-
 func AddNFTWithWorkId(c echo.Context) error {
 	work_id_str := c.QueryParam("work_id")
 	work_id, err := strconv.ParseUint(work_id_str, 10, 64)
@@ -143,39 +62,14 @@ func MintArtWithoutPaying(c echo.Context) error {
 		fmt.Printf(err.Error())
 	}
 
-	db := db.DbManager()
-	var nfts model.Nft
-	var result1 uint64
-
-	db.Model(nfts).Select(`MAX(nft_id)`).Scan(&result1)
-
-	var works model.Work
-	var result2 string
-
-	db.Model(works).Select(`a.address`).
-		Joins("left join test.artists as a on a.id = works.artist_id").
-		Where("works.work_id=?", work_id).
-		Scan(&result2)
-
-	newItemId := result1 + 1
-	artist_address := result2
-
-	fmt.Printf("\n newItemId: %d, artist_address: %s \n", newItemId, artist_address)
-
-	db.Create(model.Nft{
-		NftID:   uint(newItemId),
-		WorksID: uint(work_id),
-		OwnerID: 0,
-	})
-
 	klipKey := rand.Uint64()
 	reqBodyStr := fmt.Sprintf(`{
 		"type": "auth",
 		"bapp": {
 			"name" : "NFTime",
-			"callback": { "success": "http:\/\/34.212.84.161\/onSuccessKlip?klip_key=%s&nft_id=%s", "fail": "" }
+			"callback": { "success": "http:\/\/34.212.84.161\/onSuccessKlip?klip_key=%s&work_id=%s", "fail": "" }
 		}
-	}`, strconv.FormatUint(klipKey, 10), strconv.FormatUint(newItemId, 10))
+	}`, strconv.FormatUint(klipKey, 10), strconv.FormatUint(work_id, 10))
 	reqBody := bytes.NewBufferString(reqBodyStr)
 	resp, err := http.Post("https://a2a-api.klipwallet.com/v2/a2a/prepare", "Content-Type: application/json", reqBody)
 	if err != nil {
@@ -213,58 +107,114 @@ func OnSuccessKlip(c echo.Context) error {
 		fmt.Printf(err.Error())
 	}
 
-	nftId_str := c.QueryParam("nft_id")
-	nftId, err := strconv.ParseUint(nftId_str, 10, 64)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
+	workId := c.QueryParam("work_id")
 
 	requestKey := KlipRequestMap[klipKey]
 
 	fmt.Println(requestKey)
 
-	client := &http.Client{}
-	reqStr := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", requestKey)
-	req, err := http.NewRequest("GET", reqStr, nil)
+	client1 := &http.Client{}
+	reqStr1 := fmt.Sprintf("https://a2a-api.klipwallet.com/v2/a2a/result?request_key=%s", requestKey)
+	req1, err := http.NewRequest("GET", reqStr1, nil)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := client.Do(req)
+	req1.Header.Add("Content-Type", "application/json")
+	resp1, err := client1.Do(req1)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body1, err := io.ReadAll(resp1.Body)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	var jData KlipResponse
-	fmt.Printf("body: %s \n", body)
-	json.Unmarshal(body, &jData)
+	var jData1 KlipResponse
+	fmt.Printf("body1: %s \n", body1)
+	json.Unmarshal(body1, &jData1)
 
-	fmt.Printf("Klaytn address: %s", jData.Result.KlaytnAddress)
+	fmt.Printf("Klaytn address: %s", jData1.Result.KlaytnAddress)
+	fmt.Println("")
+	resp1.Body.Close()
+
+	client2 := &http.Client{}
+	reqStr2 := fmt.Sprintf("http://34.212.84.161/mintToAddr?address=%s&work_id=%s", jData1.Result.KlaytnAddress, workId)
+	req2, err := http.NewRequest("GET", reqStr2, nil)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	resp2, err := client2.Do(req2)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	body2, err := io.ReadAll(resp2.Body)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	fmt.Printf("body2: %s \n", body2)
+
+	resString := string(body2[:])
+
+	fmt.Printf("result: %s", resString)
+	fmt.Println("")
+	resp2.Body.Close()
+
+	return c.String(http.StatusOK, resString)
+}
+
+func MintToAddr(c echo.Context) error {
+	address := c.QueryParam("address")
+
+	workId_str := c.QueryParam("work_id")
+	workId, err := strconv.ParseUint(workId_str, 10, 64)
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+
+	fmt.Printf("Work Id: %d", workId)
+	fmt.Println("")
+
+	db := db.DbManager()
+	var nfts model.Nft
+	var result uint64
+
+	db.Model(nfts).Select(`MAX(nft_id)`).Scan(&result)
+
+	newItemId := result + 1
+
+	db.Create(model.Nft{
+		NftID:   uint(newItemId),
+		WorksID: uint(workId),
+		OwnerID: 0,
+	})
+
+	fmt.Printf("Klaytn address: %s", address)
 	fmt.Println("")
 
 	typ := abi.MustNewType("uint256")
-	nftId_big := big.NewInt(int64(nftId))
-	encoded, err := typ.Encode(nftId_big)
+
+	nftId_big := big.NewInt(int64(newItemId))
+	nftId_encoded, err := typ.Encode(nftId_big)
 	if err != nil {
 		panic(err)
 	}
+	nftId_hex := fmt.Sprintf("%x", nftId_encoded)
 
-	nftId_hex := fmt.Sprintf("%x", encoded)
+	workId_big := big.NewInt(int64(workId))
+	workId_encoded, err := typ.Encode(workId_big)
+	if err != nil {
+		panic(err)
+	}
+	workId_hex := fmt.Sprintf("%x", workId_encoded)
+
 	addressBase := "0000000000000000000000000000000000000000000000000000000000000000"
 	ablen := len(addressBase)
-	kalen := len(jData.Result.KlaytnAddress)
-	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], jData.Result.KlaytnAddress[2:])
+	kalen := len(address)
+	addr_hex := fmt.Sprintf("%s%s", addressBase[:(ablen-kalen+2)], address[2:])
 
-	reqCallData := "0x697d0413"
+	reqCallData := "0x20b7668b"
 	reqCallData += addr_hex
 	reqCallData += nftId_hex
-	reqCallData += "0000000000000000000000000000000000000000000000000000000000000060"
-	reqCallData += "0000000000000000000000000000000000000000000000000000000000000004"
-	reqCallData += "7465737400000000000000000000000000000000000000000000000000000000"
+	reqCallData += workId_hex
 
 	fmt.Println(reqCallData)
 
@@ -273,7 +223,7 @@ func OnSuccessKlip(c echo.Context) error {
 	jsonStr := fmt.Sprintf(`{
 		"from": "0x7c07C1579aD1980863c83876EC4bec43BC8d6dFa",
 		"value": "0x0",
-		"to": "0xeb0912eff03e357c4cbb9c9c925ae01b2da1e486",
+		"to": "0x63Ff714D28D84Eb336cEd92b9DAB59C8797D5bCB",
 		"input": "%s",
 		"nonce": 0,
 		"gasLimit": 1000000,
@@ -297,5 +247,5 @@ func OnSuccessKlip(c echo.Context) error {
 	}
 	fmt.Printf("kas body: %s \n", kasBody)
 
-	return c.Redirect(http.StatusFound, "https://klipwallet.com/")
+	return c.String(http.StatusOK, "Success Mint")
 }
