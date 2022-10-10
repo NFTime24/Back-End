@@ -10,14 +10,22 @@ import (
 func Init() *echo.Echo {
 	e := echo.New()
 	e.GET("/", api.Home)
+
+	e.POST("/file-upload", api.UploadWork)
 	e.Static("/assets", "assets")
-	e.GET("/work/specific", api.GetSpecificWorkWithName)
-	e.GET("/work/top10", api.GetTop10Works)
+
 	e.GET("/mintArtWithoutPaying", api.MintArtWithoutPaying)
 	e.GET("/onSuccessKlip", api.OnSuccessKlip)
 	e.GET("/mintToAddr", api.MintToAddr)
 	e.GET("/addNFTWithWorkId", api.AddNFTWithWorkId)
 	e.GET("/getNFTInfoWithId", api.GetNFTInfoWithId)
+
+	e.POST("/user", api.PostUser)
+	e.GET("/getUserWithAddress", api.GetUserWithAddress)
+
+	e.POST("/workInfo", api.PostWork)
+	e.GET("/getWorksInExhibition", api.GetWorksInExhibition)
+	e.GET("/getWorksInfo", api.GetWorksInfoInExhibition)
 	e.GET("/getWorkIdWithNftId", api.GetWorkIdWithNftId)
 	e.GET("/getWorkInfoWithId", api.GetWorkInfoWithId)
 	e.GET("/getTopWorks", api.GetTopWorks)
@@ -25,18 +33,19 @@ func Init() *echo.Echo {
 	e.GET("/getTodayWorks", api.GetTodayWorks)
 	e.GET("/getNewWorks", api.GetNewWorks)
 	e.GET("/getAllWorks", api.GetAllWorks)
-	e.POST("/like", api.UpdateLike)
-	e.GET("/exhibition", api.ShowAllExhibitions)
-	e.POST("/exhibition", api.PostExhibition)
-	e.POST("/user", api.PostUser)
+	e.GET("/work/specific", api.GetSpecificWorkWithName)
+	e.GET("/work/top10", api.GetTop10Works)
+
 	e.POST("/artist", api.PostArtist)
-	e.POST("/workInfo", api.PostWork)
-	e.POST("/file-upload", api.UploadWork)
-	e.GET("/getWorksInExhibition", api.GetWorksInExhibition)
-	e.GET("/getWorksInfo", api.GetWorksInfoInExhibition)
 	e.GET("/artist", api.ShowAllArtists)
 	e.GET("/getActiveArtists", api.GetActiveArtists)
-	e.GET("/getUserWithAddress", api.GetUserWithAddress)
+	e.GET("/getTopArtists", api.GetTopArtists)
+
+	e.POST("/like", api.UpdateLike)
+
+	e.POST("/exhibition", api.PostExhibition)
+	e.GET("/exhibition", api.ShowAllExhibitions)
+
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.GET("/redirectTest", api.RedirectTest)
