@@ -43,6 +43,7 @@ func Init() *echo.Echo {
 	e.GET("/getTopArtists", api.GetTopArtists)
 
 	e.POST("/fantalk", api.PostFantalk)
+	e.GET("/getArtistFantalks", api.GetArtistFantalks)
 
 	e.POST("/like", api.UpdateLike)
 

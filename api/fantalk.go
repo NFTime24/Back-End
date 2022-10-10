@@ -45,3 +45,31 @@ func PostFantalk(c echo.Context) error {
 
 	return c.String(http.StatusOK, strconv.FormatUint(uint64(id), 10))
 }
+
+func GetArtistFantalks(c echo.Context) error {
+	artist_id_str := c.QueryParam("artist_id")
+	artist_id, _ := strconv.ParseUint(artist_id_str, 10, 32)
+
+	type Result struct {
+		PostID     uint       `json:"post_id"`
+		ArtistID   uint       `json:"artist_id"`
+		OwnerID    uint       `json:"owner_id"`
+		PostText   string     `json:"post_text"`
+		LikeCount  uint       `json:"like_count"`
+		CreateTime *time.Time `json:"create_time"`
+		ModifyTime *time.Time `json:"modify_time"`
+		Nickname   string     `json:"nickname"`
+		Path       string     `json:"path"`
+	}
+
+	db := db.DbManager()
+	var result Result
+	db.Select(`ft.*, u.nickname, f.path`).
+		Table("fantalks as ft").
+		Joins("left join users as u on u.id = ft.owner_id").
+		Joins("left join files as f on f.id = u.profile_id").
+		Where("ft.artist_id=?", artist_id).Scan(&result)
+
+	fmt.Println(result)
+	return c.JSON(http.StatusOK, result)
+}
