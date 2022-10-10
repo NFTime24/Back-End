@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type File struct {
 	ID          uint `gorm:"unique;autoIncrement:false"`
 	Filename    string
@@ -66,4 +68,16 @@ type Like struct {
 	OwnerID uint
 	Work    Work `gorm:"foreignkey:WorksID"`
 	WorksID uint
+}
+
+type Fantalk struct {
+	Post_id    uint   `gorm:"primarykey"`
+	Artist     Artist `gorm:"foreignkey:ArtistID"`
+	ArtistID   uint
+	User       User `gorm:"foreignkey:OwnerID"`
+	OwnerID    uint
+	PostText   string
+	LikeCount  uint
+	CreateTime *time.Time
+	ModifyTime *time.Time
 }

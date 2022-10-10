@@ -62,9 +62,8 @@ func PostExhibition(c echo.Context) error {
 	db := db.DbManager()
 
 	params := make(map[string]string)
-	test := c.Bind(&params)
-	fmt.Println(test)
-	fmt.Println(params["name"], params["description"], params["start_date"], params["end_date"], params["file_id"], params["link"])
+	bind_params := c.Bind(&params)
+	fmt.Println(bind_params)
 
 	name := params["name"]
 	description := params["description"]
@@ -74,13 +73,13 @@ func PostExhibition(c echo.Context) error {
 	link := params["link"]
 	file, _ := strconv.ParseUint(file_str, 10, 32)
 	file_id := uint(file)
-	var id uint
-	var exhibition_id model.Exhibition
-	db.Model(&exhibition_id).Pluck("ExhibitionID", &id)
+	var exibition_id uint
+	var exhibition_dbId model.Exhibition
+	db.Model(&exhibition_dbId).Pluck("ExhibitionID", &exibition_id)
 
-	id += 1
-	fmt.Println(id)
-	exhibition_insert := model.Exhibition{ExhibitionID: id, Name: name, Description: description, StartDate: start_date, EndDate: end_date, FileID: file_id, Link: link}
+	exibition_id += 1
+	fmt.Println(exibition_id)
+	exhibition_insert := model.Exhibition{ExhibitionID: exibition_id, Name: name, Description: description, StartDate: start_date, EndDate: end_date, FileID: file_id, Link: link}
 	db.Create(&exhibition_insert)
 
 	return c.JSON(http.StatusOK, params["name"])

@@ -22,10 +22,9 @@ func PostArtist(c echo.Context) error {
 	params := make(map[string]string)
 	test := c.Bind(&params)
 	fmt.Println(test)
-	fmt.Println(params["artist_name"], params["artist_address"], params["artist_profile_id"])
 
-	var id uint
-	var artist_id model.Artist
+	var artist_id uint
+	var artist_dbId model.Artist
 	artist_name := params["artist_name"]
 	artist_address := params["artist_address"]
 	artist_profile_str := params["artist_profile_id"]
@@ -33,14 +32,14 @@ func PostArtist(c echo.Context) error {
 	profile, _ := strconv.ParseUint(artist_profile_str, 10, 32)
 	artist_profile_id := uint(profile)
 
-	db.Model(&artist_id).Pluck("ID", &id)
-	id += 1
-	fmt.Println(id)
+	db.Model(&artist_dbId).Pluck("ID", &artist_id)
+	artist_id += 1
+	fmt.Println(artist_id)
 
-	artist_insert := model.Artist{ID: id, Name: artist_name, Address: artist_address, ProfileID: artist_profile_id}
+	artist_insert := model.Artist{ID: artist_id, Name: artist_name, Address: artist_address, ProfileID: artist_profile_id}
 
 	db.Create(&artist_insert)
-	return c.JSON(http.StatusOK, params["artist_name"])
+	return c.JSON(http.StatusOK, params)
 }
 
 // @Summary artist info
@@ -68,7 +67,6 @@ func ShowAllArtists(c echo.Context) error {
 	}
 	for rows.Next() {
 		db.ScanRows(rows, &results)
-		fmt.Println(results[1])
 	}
 
 	return c.JSON(http.StatusOK, results)
