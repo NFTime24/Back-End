@@ -33,6 +33,7 @@ func Init() *echo.Echo {
 	e.GET("/getTodayWorks", api.GetTodayWorks)
 	e.GET("/getNewWorks", api.GetNewWorks)
 	e.GET("/getAllWorks", api.GetAllWorks)
+	e.GET("/getArtistWorks", api.GetArtistWorks)
 	e.GET("/work/specific", api.GetSpecificWorkWithName)
 	e.GET("/work/top10", api.GetTop10Works)
 
