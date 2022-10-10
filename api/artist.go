@@ -111,11 +111,12 @@ func GetTopArtists(c echo.Context) error {
 	var results []Result
 	rows, err := db.Select(`a.*, f.path`).
 		Table(`(
-			Select w.artist_id, count(w.artist_id) as count
+			select w.artist_id, count(w.artist_id) as count
 			from test.nfts as n
 			left join test.works as w on w.work_id = n.works_id
 			group by w.artist_id
-			order by count desc ) as base`).
+			order by count desc
+			limit 5 ) as base`).
 		Joins("left join artists as a on base.artist_id = a.id").
 		Joins("left join files as f on f.id = a.profile_id").Rows()
 	if err != nil {
