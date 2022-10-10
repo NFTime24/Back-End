@@ -68,7 +68,8 @@ func GetArtistFantalks(c echo.Context) error {
 		Table("fantalks as ft").
 		Joins("left join users as u on u.id = ft.owner_id").
 		Joins("left join files as f on f.id = u.profile_id").
-		Where("ft.artist_id=?", artist_id).Rows()
+		Where("ft.artist_id=?", artist_id).
+		Order("post_id desc").Rows()
 	if err != nil {
 		panic(err)
 	}
