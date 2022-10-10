@@ -26,14 +26,18 @@ func PostUser(c echo.Context) error {
 	profile, _ := strconv.ParseUint(user_profile_str, 10, 32)
 	user_profile_id := uint(profile)
 
-	fmt.Println("user profile id", user_profile_id)
+	fmt.Println("user profile id:", user_profile_id)
 	if user_profile_id == 0 {
 		user_profile_id = 137
 	}
 
+	var checkAddress string
+	db.Model(&user_id).Select("address").Where("address=?", user_address).Scan(&checkAddress)
+	fmt.Println("checkAddress:", checkAddress)
+
 	db.Model(&user_id).Select("id").Last(&id)
 	id += 1
-	fmt.Println(id)
+	fmt.Println("new id:", id)
 
 	user_insert := model.User{ID: id, Address: user_address, Nickname: user_nickname, ProfileID: user_profile_id}
 
