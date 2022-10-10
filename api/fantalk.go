@@ -63,13 +63,17 @@ func GetArtistFantalks(c echo.Context) error {
 	}
 
 	db := db.DbManager()
-	var result Result
-	db.Select(`ft.*, u.nickname, f.path`).
+	var results []Result
+	rows, err := db.Select(`ft.*, u.nickname, f.path`).
 		Table("fantalks as ft").
 		Joins("left join users as u on u.id = ft.owner_id").
 		Joins("left join files as f on f.id = u.profile_id").
-		Where("ft.artist_id=?", artist_id).Scan(&result)
-
-	fmt.Println(result)
-	return c.JSON(http.StatusOK, result)
+		Where("ft.artist_id=?", artist_id).Rows()
+	if err != nil {
+		panic(err)
+	}
+	for rows.Next() {
+		db.ScanRows(rows, &results)
+	}
+	return c.JSON(http.StatusOK, results)
 }
