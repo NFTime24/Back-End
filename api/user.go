@@ -27,6 +27,9 @@ func PostUser(c echo.Context) error {
 	user_profile_id := uint(profile)
 
 	fmt.Println("user profile id", user_profile_id)
+	if user_profile_id == 0 {
+		user_profile_id = 137
+	}
 
 	db.Model(&user_id).Select("id").Last(&id)
 	id += 1
