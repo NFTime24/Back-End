@@ -34,14 +34,16 @@ func PostUser(c echo.Context) error {
 	var checkAddress string
 	db.Model(&user_id).Select("address").Where("address=?", user_address).Scan(&checkAddress)
 	fmt.Println("checkAddress:", checkAddress)
+	if len(checkAddress) == 0 {
+		db.Model(&user_id).Select("id").Last(&id)
+		id += 1
+		fmt.Println("new id:", id)
 
-	db.Model(&user_id).Select("id").Last(&id)
-	id += 1
-	fmt.Println("new id:", id)
+		user_insert := model.User{ID: id, Address: user_address, Nickname: user_nickname, ProfileID: user_profile_id}
 
-	user_insert := model.User{ID: id, Address: user_address, Nickname: user_nickname, ProfileID: user_profile_id}
+		db.Create(&user_insert)
+	}
 
-	db.Create(&user_insert)
 	return c.JSON(http.StatusOK, params["user_address"])
 }
 
