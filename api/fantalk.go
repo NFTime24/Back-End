@@ -51,15 +51,15 @@ func GetArtistFantalks(c echo.Context) error {
 	artist_id, _ := strconv.ParseUint(artist_id_str, 10, 32)
 
 	type Result struct {
-		PostID     uint       `json:"post_id"`
-		ArtistID   uint       `json:"artist_id"`
-		OwnerID    uint       `json:"owner_id"`
-		PostText   string     `json:"post_text"`
-		LikeCount  uint       `json:"like_count"`
-		CreateTime *time.Time `json:"create_time"`
-		ModifyTime *time.Time `json:"modify_time"`
-		Nickname   string     `json:"nickname"`
-		Path       string     `json:"path"`
+		PostID     uint   `json:"post_id"`
+		ArtistID   uint   `json:"artist_id"`
+		OwnerID    uint   `json:"owner_id"`
+		PostText   string `json:"post_text"`
+		LikeCount  uint   `json:"like_count"`
+		CreateTime string `json:"create_time"`
+		ModifyTime string `json:"modify_time"`
+		Nickname   string `json:"nickname"`
+		Path       string `json:"path"`
 	}
 
 	db := db.DbManager()
